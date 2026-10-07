@@ -1,0 +1,14 @@
+[
+  {"name":"stock", "tail":"", "blocked":null},
+  {"name":"later-require", "tail":"require 'hypr.personal'\n", "blocked":null},
+  {"name":"hyprmoncfg-final", "tail":"-- Generated rules load last.\ndo local path = os.getenv(\"HOME\") .. \"/.config/hypr/hyprmoncfg-monitors.lua\"; local file = io.open(path, \"r\"); if file then file:close(); dofile(path) end end\n", "blocked":null},
+  {"name":"comment-lookalikes", "tail":"-- require(\"hypr.looknfeel\")\n--[=[ require(\"hypr.heartchy\") ]=]\n", "blocked":null},
+  {"name":"existing-heartchy", "tail":"", "look":"managed", "blocked":null},
+  {"name":"duplicate", "tail":"require(\"hypr.looknfeel\")\n", "blocked":"ENTRYPOINT_DUPLICATE_OR_CORE_LOAD"},
+  {"name":"duplicate-personal", "tail":"require 'hypr.personal'; require 'hypr.personal'\n", "blocked":"ENTRYPOINT_DUPLICATE_OR_CORE_LOAD"},
+  {"name":"ambiguous-order", "swap":true, "tail":"", "blocked":"ENTRYPOINT_ORDER_UNVERIFIED"},
+  {"name":"invalid-concatenation", "broken_concat":true, "tail":"", "blocked":"ENTRYPOINT_ORDER_UNVERIFIED"},
+  {"name":"unsupported", "tail":"if true then require('hypr.personal') end\n", "blocked":"ENTRYPOINT_SUFFIX_UNSUPPORTED"},
+  {"name":"string-lookalike", "tail":"local text = 'require(\"hypr.personal\")'\n", "blocked":"ENTRYPOINT_SUFFIX_UNSUPPORTED"},
+  {"name":"indirect-load", "tail":"require('hypr.' .. 'personal')\n", "blocked":"ENTRYPOINT_SUFFIX_UNSUPPORTED"}
+]

@@ -1,0 +1,11 @@
+{
+  "name": "Heartchy Core",
+  "summary": "Primera entrega de prueba: Core Cristal con aplicación revisada y recuperación.",
+  "card": "major",
+  "description": "PRE-RELEASE para probar una entrega acumulativa verificada, su plan y el motor Core en un target explícito. No instala paquetes, aplicaciones ni plugins; no activa servicios ni recarga el escritorio.",
+  "changes": ["Consulta de GitHub Releases y selección explícita del canal Prueba.", "Verificación OpenSSH, inventario y runtime extraído independiente."],
+  "components": ["Core Cristal: módulo y conexión Lua, transparencia JSON y tokens TOML.", "TUI Heartchy y primitivas de planificación, aplicación y recuperación."],
+  "fixes": ["Propiedad de archivos vacíos tras retirada y nueva aplicación.", "Exclusión de operaciones y autoridad única de estado por target."],
+  "notes": ["No es una versión oficial ni una instalación permanente.", "Sin autoactualización del cliente en ejecución; usar una extracción nueva verificada.", "Validación gráfica stock, prueba personal del actualizador y Rafa pendientes."],
+  "apps": []
+}

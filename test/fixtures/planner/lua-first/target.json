@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "kind": "heartchy-simulated-target",
+  "contracts": {
+    "shell_intent": "omarchy-shell-json-v1",
+    "shell_tokens": "omarchy-shell-toml-key-merge-v1",
+    "hypr_module": "heartchy-lua-module-bytes-v1",
+    "hypr_connection": "omarchy-lua-prefix-v1"
+  }
+}

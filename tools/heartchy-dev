@@ -1,0 +1,564 @@
+#!/usr/bin/python3 -I
+"""Explicit Core development operations; never refresh the running desktop."""
+
+import sys
+
+sys.dont_write_bytecode = True
+
+import argparse
+import datetime
+import hashlib
+import json
+import math
+import os
+from pathlib import Path, PurePosixPath
+import re
+import shutil
+import stat
+import subprocess
+import tomllib
+
+ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = "core/manifest.json"
+SOURCES = {
+    "hypr": ("core/hypr/heartchy.lua", "lua"),
+    "shell_tokens": ("core/shell/cristal.toml", "toml"),
+    "shell_intent": ("core/shell/settings-intent.json", "intent-json"),
+}
+SUPPORT = (
+    MANIFEST, "docs/provenance.json", "docs/upstream-evidence.json",
+    "docs/architecture.md", "docs/upstream.md", "NOTICE.md",
+)
+SAFE_ENV = {"PATH": "/usr/bin:/bin", "LC_ALL": "C", "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_OPTIONAL_LOCKS": "0"}
+NOFOLLOW = os.O_NOFOLLOW | os.O_CLOEXEC
+TOKEN_KEYS = {
+    "hyprland": "active-border active-border-foreground",
+    "controls": "normal-fill-alpha normal-border normal-border-alpha normal-border-width "
+                "hover-cursor-fill-alpha hover-cursor-border hover-cursor-border-alpha hover-cursor-border-width "
+                "focus-fill-alpha focus-border focus-border-alpha focus-border-width "
+                "selected-fill-alpha selected-border selected-border-alpha selected-border-width "
+                "pressed-fill-alpha selection-fill-alpha",
+    "menu": "background-alpha border border-alpha border-width scrim-alpha selected-background "
+            "selected-background-alpha selected-border selected-border-alpha selected-border-width",
+    "popups": "background-alpha border border-alpha border-width",
+    "notifications": "background-alpha border border-alpha border-width",
+    "tooltip": "background-alpha border border-alpha border-width",
+    "polkit": "background-alpha border border-alpha border-width scrim-alpha border-error",
+    "lock": "background-alpha border border-alpha border-width border-active border-error selection selection-alpha",
+    "image-picker": "scrim-alpha selected-border selected-border-alpha unselected-border unselected-border-alpha",
+}
+
+
+class Invalid(Exception):
+    """An invalid source, contract or output request."""
+
+
+def require(condition, message):
+    if not condition:
+        raise Invalid(message)
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def json_bytes(value):
+    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
+
+
+def relative_parts(value):
+    require(isinstance(value, str) and value and "\\" not in value, f"invalid relative path: {value!r}")
+    parts = value.split("/")
+    require(not value.startswith("/") and all(p not in ("", ".", "..") for p in parts),
+            f"path escapes scope: {value!r}")
+    return parts
+
+
+def read_project(relative, missing_ok=False):
+    """Open every component relative to a directory FD; never follow symlinks."""
+    parts = relative_parts(relative)
+    fd = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW)
+    try:
+        for part in parts[:-1]:
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        # A FIFO must reach fstat and be rejected, not wait for a writer.
+        source = os.open(parts[-1], os.O_RDONLY | os.O_NONBLOCK | NOFOLLOW, dir_fd=fd)
+        with os.fdopen(source, "rb") as stream:
+            info = os.fstat(stream.fileno())
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, f"not a standalone regular file: {relative}")
+            require(info.st_size <= 2_000_000, f"source too large: {relative}")
+            return stream.read()
+    except FileNotFoundError as exc:
+        if missing_ok:
+            return None
+        raise Invalid(f"cannot safely read {relative}: {exc.strerror}") from exc
+    except OSError as exc:
+        raise Invalid(f"cannot safely read {relative}: {exc.strerror}") from exc
+    finally:
+        os.close(fd)
+
+
+def source_path(relative):
+    return ROOT / relative
+
+
+def parse_json(data, label):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, f"{label}: duplicate JSON key {key}")
+            result[key] = value
+        return result
+    try:
+        return json.loads(data, object_pairs_hook=unique,
+                          parse_constant=lambda value: (_ for _ in ()).throw(Invalid(f"{label}: invalid number {value}")))
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        raise Invalid(f"{label}: invalid JSON: {exc}") from exc
+
+
+def flat(value, prefix=""):
+    result = {}
+    for key, item in value.items():
+        path = f"{prefix}.{key}" if prefix else key
+        if isinstance(item, dict):
+            result.update(flat(item, path))
+        else:
+            result[path] = item
+    return result
+
+
+def run_readonly(arguments, timeout=8, input_text=None):
+    try:
+        return subprocess.run(arguments, cwd=ROOT, env=SAFE_ENV, capture_output=True,
+                              text=True, timeout=timeout, check=False, input=input_text)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise Invalid(f"cannot run isolated inspection: {exc}") from exc
+
+
+def inspect_lua(path, data, values=False):
+    lua = shutil.which("lua", path=SAFE_ENV["PATH"])
+    require(lua is not None, "NOT_RUN: lua 5.4/5.5 is required; nothing was installed")
+    read_project("tools/lua-contract.lua")
+    result = run_readonly([lua, str(source_path("tools/lua-contract.lua"))], input_text=data.decode())
+    require(result.returncode == 0, f"{path}: Lua inspection failed: {result.stderr.strip()}")
+    calls = parse_json(result.stdout, "Lua declarations")
+    require(isinstance(calls, list) and [c.get("kind") for c in calls] ==
+            ["config", "layer_rule", "window", "animation"], "Lua: expected only config, layer rule, terminal rule and workspace animation")
+    require([len(c["args"]) for c in calls] == [1, 1, 2, 1], "Lua: unsupported declaration arity")
+    config = flat(calls[0]["args"][0])
+    expected = {
+        "general.border_size": 1,
+        "general.col.active_border": "rgba(b8b8b880)", "general.col.inactive_border": "rgba(88888840)",
+        "group.col.border_active": "rgba(b8b8b880)", "group.col.border_inactive": "rgba(88888840)",
+        "decoration.blur.enabled": True, "decoration.blur.size": 6, "decoration.blur.passes": 2,
+        "decoration.blur.vibrancy": 0.0, "decoration.blur.contrast": 0.92, "decoration.blur.brightness": 1.0,
+    }
+    require(config == expected, "Lua: Cristal scalar contract changed or unrelated settings added")
+    require(all(isinstance(value, bool) == isinstance(expected[key], bool) for key, value in config.items()),
+            "Lua: boolean/number type mismatch")
+    layer = calls[1]["args"][0]
+    require(layer == {
+        "name": "omarchy-glass-surfaces",
+        "match": {"namespace": "^omarchy-(bar|menu|notifications|keyboard-panel|osd|clipboard|emojis|reminders|polkit|network-qr|network-speedtest|disk-speedtest|image-selector|lock-preview)$"},
+        "blur": True, "blur_popups": True, "ignore_alpha": 0.10,
+    }, "Lua: selective layer contract changed")
+    require(layer["blur"] is True and layer["blur_popups"] is True, "Lua: layer flags must be booleans")
+    require(calls[2]["args"] == [{"tag": "terminal"}, {"opacity": "1 override 1 override 1 override"}],
+            "Lua: terminal compositor opacity contract changed")
+    require(calls[3]["args"][0] == {"leaf": "workspaces", "enabled": True, "speed": 4,
+                                  "bezier": "easeOutQuint", "style": "slidevert"},
+            "Lua: workspace animation contract changed")
+    require(calls[3]["args"][0]["enabled"] is True, "Lua: animation enabled must be boolean")
+    declarations = {**config, "layer:omarchy-glass-surfaces": layer,
+                    "window:tag=terminal.opacity": calls[2]["args"][1]["opacity"],
+                    "animation:workspaces": calls[3]["args"][0]}
+    return declarations if values else sorted(declarations)
+
+
+def parse_stock_toml(data):
+    try:
+        source = data.decode()
+        tokens = tomllib.loads(source)
+    except (tomllib.TOMLDecodeError, UnicodeError) as exc:
+        raise Invalid(f"cristal.toml: invalid TOML: {exc}") from exc
+    # Color.parseShell is a line walker, not a full TOML parser. Reject valid
+    # TOML spellings it would silently ignore or interpret differently.
+    section_line = r"\[[A-Za-z0-9_-]+\]\s*(?:#.*)?"
+    value_line = r'''[A-Za-z0-9_-]+\s*=\s*(?:"[^"'\\]+"|'[^'"\\]+'|-?[0-9]+(?:\.[0-9]+)?)\s*(?:#.*)?'''
+    for number, raw in enumerate(source.splitlines(), 1):
+        line = raw.strip()
+        require(not line or line.startswith("#") or re.fullmatch(section_line, line)
+                or re.fullmatch(value_line, line),
+                f"cristal.toml:{number}: unsupported stock Shell syntax; use simple keys, strings and decimal numbers")
+    return tokens
+
+
+def recipient_toml_index(data):
+    """Stdlib validates TOML; a small lexical mask locates editable Core lines.
+
+    Foreign strings/arrays/tables are opaque. The mask only prevents their
+    contents being mistaken for headings or assignments; it is not a parser.
+    Managed tokens still require the installed Shell's simple line syntax.
+    """
+    try:
+        text = data.decode("utf-8")
+        document = tomllib.loads(text)
+    except (tomllib.TOMLDecodeError, UnicodeError) as exc:
+        raise Invalid(f"recipient shell.toml: invalid TOML: {exc}") from exc
+    lines = text.splitlines(keepends=True)
+    headings, keys, boundaries = {}, {}, []
+    section, quote, depth = None, None, 0
+    for number, line in enumerate(lines):
+        if quote is None and depth == 0:
+            stripped = line.lstrip()
+            if stripped.startswith("["):
+                boundaries.append(number)
+                heading = re.fullmatch(r"\s*\[([A-Za-z0-9_-]+)\]\s*(?:#.*)?", line.rstrip("\r\n"))
+                section = heading[1] if heading else None
+                if section is not None:
+                    headings[section] = number
+            else:
+                key = re.match(r"\s*([A-Za-z0-9_-]+)\s*=", line)
+                if key:
+                    keys[(section, key[1])] = number
+        i = 0
+        while i < len(line):
+            char = line[i]
+            if quote is not None:
+                if quote[0] == '"' and char == "\\":
+                    i += 2
+                    continue
+                if line.startswith(quote, i):
+                    count = len(quote)
+                    if count == 3:
+                        # TOML permits one/two quotes immediately before a
+                        # multiline closing delimiter (four/five in a run).
+                        count = min(5, len(line[i:]) - len(line[i:].lstrip(quote[0])))
+                    i += count
+                    quote = None
+                    continue
+            elif char == "#":
+                break
+            elif char in "\"'":
+                quote = char * 3 if line.startswith(char * 3, i) else char
+                i += len(quote)
+                continue
+            elif char in "[{":
+                depth += 1
+            elif char in "]}":
+                depth -= 1
+            i += 1
+    for section, managed in TOKEN_KEYS.items():
+        if section not in document:
+            continue
+        require(isinstance(document[section], dict) and section in headings,
+                f"BLOCKED: ambiguous managed TOML section [{section}]")
+        for key in set(managed.split()) & set(document[section]):
+            index = keys.get((section, key))
+            require(index is not None and re.fullmatch(
+                r'''\s*[A-Za-z0-9_-]+\s*=\s*(?:"[^"'\\]+"|'[^'"\\]+'|-?[0-9]+(?:\.[0-9]+)?)\s*(?:#.*)?''',
+                lines[index].rstrip("\r\n")), f"BLOCKED: ambiguous or unsupported managed TOML line {section}.{key}")
+    # Color.parseShell is a line walker, not tomllib. Even valid foreign TOML
+    # can leak fake sections/keys into its view. Compare the final consumed
+    # managed assignment locations, not just equal values, before adopting
+    # or writing. This also catches ignored dotted/quoted foreign headings.
+    consumed, section = {}, None
+    for number, raw in enumerate(lines):
+        line = raw.strip()
+        heading = re.fullmatch(r"\[([A-Za-z0-9_-]+)\]\s*(?:#.*)?", line)
+        if heading:
+            section = heading[1]
+            continue
+        if section not in TOKEN_KEYS:
+            continue
+        patterns = (
+            r'''([A-Za-z0-9_-]+)\s*=\s*["']([^"']+)["']\s*(?:#.*)?''',
+            r"([A-Za-z0-9_-]+)\s*=\s*(-?[0-9]+(?:\.[0-9]+)?)\s*(?:#.*)?",
+            r"([A-Za-z0-9_-]+)\s*=\s*(-?[0-9]+(?:\.[0-9]+)?(?:\s+-?[0-9]+(?:\.[0-9]+)?){1,3})\s*(?:#.*)?",
+            r"([A-Za-z0-9_-]+)\s*=\s*([A-Za-z][A-Za-z0-9_-]*)\s*(?:#.*)?",
+        )
+        match = next((m for pattern in patterns if (m := re.fullmatch(pattern, line))), None)
+        if match and match[1] in TOKEN_KEYS[section].split():
+            consumed[(section, match[1])] = number
+    for section, managed in TOKEN_KEYS.items():
+        for key in managed.split():
+            expected = keys.get((section, key)) if key in document.get(section, {}) else None
+            require(consumed.get((section, key)) == expected,
+                    f"BLOCKED: TOML/stock Shell interpretation differs for {section}.{key}")
+    return document, lines, headings, keys, boundaries
+
+
+def parse_recipient_toml(data):
+    return recipient_toml_index(data)[0]
+
+
+def recipient_toml_values(data):
+    document = parse_recipient_toml(data)
+    return {section + "." + key: document[section][key]
+            for section, managed in TOKEN_KEYS.items() if section in document
+            for key in managed.split() if key in document[section]}
+
+
+def inspect_tokens(data):
+    tokens = parse_stock_toml(data)
+    require(set(tokens) == set(TOKEN_KEYS), "cristal.toml: missing or out-of-scope section")
+    for section, keys in TOKEN_KEYS.items():
+        require(isinstance(tokens[section], dict) and set(tokens[section]) == set(keys.split()),
+                f"cristal.toml: unsupported or missing keys in [{section}]")
+        for key, value in tokens[section].items():
+            if key.endswith("alpha"):
+                require(type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1,
+                        f"cristal.toml: invalid alpha {section}.{key}")
+            elif key.endswith("width"):
+                require(type(value) is int and value == 1, f"cristal.toml: expected 1px width {section}.{key}")
+            else:
+                require(isinstance(value, str) and (value == "accent" or re.fullmatch(
+                    r"#[0-9a-fA-F]{6}(?: #[0-9a-fA-F]{6} 135deg)?", value)),
+                    f"cristal.toml: unsupported color token {section}.{key}")
+                if value == "accent":
+                    require(section == "menu" and key in ("selected-background", "selected-border"),
+                            f"cristal.toml: unexpected accent role {section}.{key}")
+                else:
+                    for color in re.findall(r"#[0-9a-fA-F]{6}", value):
+                        require(color[1:3].lower() == color[3:5].lower() == color[5:7].lower(),
+                                f"cristal.toml: expected neutral gray {section}.{key}")
+    for section, alpha in [("menu", .75), ("popups", .70), ("notifications", .70),
+                           ("tooltip", .70), ("polkit", .75), ("lock", .75)]:
+        require(tokens[section]["background-alpha"] == alpha, f"cristal.toml: translucent surface changed: {section}")
+    require(tokens["menu"]["scrim-alpha"] == .06 and tokens["polkit"]["scrim-alpha"] == .06,
+            "cristal.toml: faint scrim changed")
+    require(tokens["menu"]["selected-background"] == tokens["menu"]["selected-border"] == "accent",
+            "cristal.toml: selection must follow accent")
+    for key, alpha in [("normal-fill-alpha", .035), ("hover-cursor-fill-alpha", .09),
+                       ("focus-fill-alpha", .10), ("selected-fill-alpha", .12),
+                       ("pressed-fill-alpha", .18), ("selection-fill-alpha", .22)]:
+        require(tokens["controls"][key] == alpha, f"cristal.toml: control state changed: {key}")
+    return sorted(flat(tokens))
+
+
+def validate(reader=None, development=True):
+    read = reader or read_project
+    manifest_data = read(MANIFEST)
+    manifest = parse_json(manifest_data, MANIFEST)
+    require(isinstance(manifest, dict) and type(manifest.get("schema_version")) is int and manifest["schema_version"] == 1 and
+            manifest.get("kind") == "heartchy-core-inventory", "invalid manifest schema/kind")
+    require(set(manifest) == {"schema_version", "kind", "application", "resources", "candidates", "references"},
+            "manifest: unknown fields; this is an inventory, not an installer language")
+    require(manifest["application"] in ("not-implemented", "separate-explicit-plan"), "manifest must not request application")
+    resources = manifest["resources"]
+    require(isinstance(resources, list) and len(resources) == 3, "manifest: exactly three Core resources required")
+    payload = {MANIFEST: manifest_data}
+    ids = set()
+    for item in resources:
+        require(isinstance(item, dict) and set(item) == {"id", "source", "format", "sha256", "managed", "contract"},
+                "manifest: invalid resource record")
+        rid = item["id"]
+        require(rid in SOURCES and rid not in ids, f"manifest: unknown/duplicate resource {rid}")
+        ids.add(rid)
+        require((item["source"], item["format"]) == SOURCES[rid], f"manifest: resource outside scope: {rid}")
+        data = read(item["source"])
+        require(digest(data) == item["sha256"], f"{item['source']}: SHA-256 mismatch; declared {item['sha256']}, actual {digest(data)}")
+        require(not re.search(rb"/home/|/usr/share/omarchy|diego\.|frosted|Surface|no_hardware_cursors|bar\.shell|_services", data),
+                f"{item['source']}: local, hardware or private dependency")
+        if rid == "hypr":
+            managed = inspect_lua(item["source"], data)
+        elif rid == "shell_tokens":
+            managed = inspect_tokens(data)
+        else:
+            intent = parse_json(data, item["source"])
+            require(intent == {"bar": {"transparent": True}} and intent["bar"]["transparent"] is True,
+                    "settings-intent.json: only bar.transparent=true is permitted; not a shell.json")
+            managed = ["bar.transparent"]
+        require(item["managed"] == sorted(managed), f"manifest: managed keys differ from source: {rid}")
+        require(item["contract"] == f"docs/architecture.md#{rid}", f"manifest: wrong contract reference for {rid}")
+        payload[item["source"]] = data
+    expected_owners = {1: "hypr", 2: "hypr", 3: "hypr", 4: "hypr", 5: "hypr",
+                       6: "shell_tokens", 7: "shell_tokens", 8: "shell_tokens", 9: "shell_intent"}
+    require(manifest["candidates"] == [{"id": i, "resource": owner} for i, owner in expected_owners.items()],
+            "manifest: nine candidates must be mapped once to their source")
+    references = manifest["references"]
+    require(references == ["docs/provenance.json", "docs/upstream-evidence.json"], "manifest: references outside supported scope")
+    for path in SUPPORT[1:]:
+        payload[path] = read(path)
+    provenance = parse_json(payload[references[0]], references[0])
+    upstream = parse_json(payload[references[1]], references[1])
+    require(provenance.get("schema_version") == 1 and isinstance(provenance.get("inputs"), list), "invalid provenance")
+    for entry in provenance["inputs"]:
+        require(re.fullmatch(r"[0-9a-f]{64}", entry.get("sha256", "")), "provenance: invalid input hash")
+    require(upstream.get("schema_version") == 1 and isinstance(upstream.get("sources"), list), "invalid upstream evidence")
+    source_ids = set()
+    for entry in upstream["sources"]:
+        require(entry.get("id") not in source_ids and entry.get("id"), "upstream: duplicate/absent source ID")
+        source_ids.add(entry["id"])
+        require(re.fullmatch(r"[0-9a-f]{64}", entry.get("sha256", "")), "upstream: invalid evidence hash")
+        if entry.get("kind") == "upstream":
+            require(re.fullmatch(r"[0-9a-f]{40}", entry.get("commit", "")), "upstream: missing exact commit")
+            require(entry.get("url", "").startswith("https://"), "upstream: invalid source URL")
+    fixtures = upstream.get("fixtures", [])
+    require({f.get("path") for f in fixtures} == {"test/fixtures/omarchy/bootstrap.lua", "test/fixtures/omarchy/window-helper.lua"}
+            and len(fixtures) == 2, "upstream: unexpected fixture inventory")
+    for fixture in fixtures:
+        require(fixture["source"] in source_ids, "fixture: unknown source reference")
+        if development:
+            require(digest(read(fixture["path"])) == fixture["sha256"], f"fixture changed: {fixture['path']}")
+    for rid in ids:
+        require(f'<a id="{rid}"></a>'.encode() in payload["docs/architecture.md"], f"missing architecture anchor: {rid}")
+    # Documentation links remain useful from a copy; external citations are not fetched.
+    for doc in (("README.md", "AGENTS.md", "STATUS.md", "docs/architecture.md", "docs/development.md", "docs/upstream.md", "NOTICE.md") if development else ()):
+        text = read(doc).decode()
+        for target in re.findall(r"\]\(([^\s)]+)\)", text):
+            if target.startswith(("https://", "http://", "#")):
+                continue
+            path = target.split("#", 1)[0]
+            # Parent links in docs are allowed only after resolving within the repo.
+            resolved = (ROOT / PurePosixPath(doc).parent / path).resolve()
+            require(resolved.is_relative_to(ROOT), f"{doc}: reference outside repo: {target}")
+            read(resolved.relative_to(ROOT).as_posix())
+    return payload
+
+
+def git_state():
+    if not (ROOT / ".git").exists():
+        return {"commit": None, "worktree": "not-a-git-checkout", "release": False}
+    git = shutil.which("git", path=SAFE_ENV["PATH"])
+    require(git is not None, "NOT_RUN: git metadata cannot be inspected")
+    prefix = [git, "--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=/dev/null"]
+    head = run_readonly(prefix + ["rev-parse", "--verify", "HEAD"])
+    status_result = run_readonly(prefix + ["status", "--porcelain=v1", "--untracked-files=normal"])
+    require(status_result.returncode == 0, "cannot inspect Git status")
+    commit = head.stdout.strip() if head.returncode == 0 else None
+    require(commit is None or re.fullmatch(r"[0-9a-f]{40,64}", commit), "invalid Git commit identity")
+    return {"commit": commit, "worktree": "uncommitted" if commit is None or status_result.stdout else "clean", "release": False}
+
+
+def output_name(raw):
+    require(".." not in Path(raw).parts and "\\" not in raw, "output: parent escapes are forbidden")
+    path = Path(raw) if Path(raw).is_absolute() else ROOT / raw
+    require(path.parent == ROOT / "build", "output must be a new direct child of this project's build/ directory")
+    require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}", path.name), "invalid candidate name")
+    return path.name
+
+
+def write_new(base_fd, path, data):
+    parts = relative_parts(path)
+    fd = os.dup(base_fd)
+    try:
+        for part in parts[:-1]:
+            try:
+                os.mkdir(part, 0o755, dir_fd=fd)
+            except FileExistsError:
+                pass
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        file_fd = os.open(parts[-1], os.O_WRONLY | os.O_CREAT | os.O_EXCL | NOFOLLOW, 0o644, dir_fd=fd)
+        with os.fdopen(file_fd, "wb") as stream:
+            stream.write(data)
+            os.fchmod(stream.fileno(), 0o644)
+    finally:
+        os.close(fd)
+
+
+def stage(raw, payload):
+    name = output_name(raw)
+    metadata = {"created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "git": git_state(),
+                "installed": False, "published": False, "classification": "local-review-candidate"}
+    inventory = {"schema_version": 1, "kind": "heartchy-local-candidate", "installed": False, "published": False,
+                 "builder_sha256": digest(read_project("tools/heartchy-dev")),
+                 "inspection_sha256": digest(read_project("tools/lua-contract.lua")),
+                 "files": [{"path": p, "sha256": digest(data), "bytes": len(data), "mode": "0644"}
+                           for p, data in sorted(payload.items())]}
+    root_fd = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW)
+    build_fd = candidate_fd = None
+    try:
+        try:
+            os.mkdir("build", 0o755, dir_fd=root_fd)
+        except FileExistsError:
+            pass
+        build_fd = os.open("build", os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=root_fd)
+        os.mkdir(name, 0o700, dir_fd=build_fd)
+        candidate_fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=build_fd)
+        for path, data in sorted(payload.items()):
+            write_new(candidate_fd, path, data)
+        write_new(candidate_fd, "local.json", json_bytes(metadata))
+        # Written last: incomplete output has no successful inventory.
+        write_new(candidate_fd, "inventory.json", json_bytes(inventory))
+        os.fchmod(candidate_fd, 0o755)
+    except OSError as exc:
+        raise Invalid(f"stage refused/failed: {exc.strerror}; existing content is never overwritten; any partial candidate is left for inspection") from exc
+    finally:
+        for fd in (candidate_fd, build_fd, root_fd):
+            if fd is not None:
+                os.close(fd)
+    return ROOT / "build" / name
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Core development: check/stage/plan, explicit scoped apply/rollback/recovery, or Feature document. No services or desktop IPC.")
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("check", help="Read/validate sources, hashes, formats, scope and references; no writes.")
+    staging = sub.add_parser("stage", help="Validate and create a new local candidate; never apply it.")
+    staging.add_argument("--output", required=True, help="New direct child of repository build/, e.g. build/review-001; relative to the repository, not cwd.")
+    planning = sub.add_parser("plan", help="Read-only three-way plan for an explicit simulation or local descriptor; no application.")
+    planning.add_argument("--candidate", required=True, help="Existing staged candidate: build/<name>.")
+    planning.add_argument("--target", required=True, help="Simulation under build/simulations/<name> or test/fixtures/planner/<name>, or prepared build/local-targets/<name>; relative to checkout.")
+    planning.add_argument("--resource", action="append", choices=sorted(set(SOURCES) | {"hypr_module", "hypr_connection"}), help="Limit planning to selected resources; hypr selects module + connection. Default: all four planning resources.")
+    planning.add_argument("--prefer-heartchy", action="append", default=[], metavar="RESOURCE[:KEY]", help="Request Heartchy for only these keys, pending application approval; repeatable. Never bypass blocks.")
+    planning.add_argument("--keep-local", action="append", default=[], metavar="RESOURCE[:KEY]", help="Explicitly resolve selected differences by keeping local values; repeatable.")
+    planning.add_argument("--format", choices=("text", "json"), default="text", help="Print human summary or structured plan to stdout; writes no files.")
+    planning.add_argument("--recheck", metavar="BUILD_PLAN_JSON", help="Compare examined hashes/context to a saved JSON plan under build/; stale inputs block the new plan.")
+    planning.add_argument("--state-root", help="Explicit private state under build/state/<name>. Without it, legacy simulated state.json is read-only.")
+    for command in ("apply", "validate", "rollback", "recover"):
+        operation = sub.add_parser(command, help={"apply": "Recheck a reviewed plan, prepare all files and commit only its managed changes.", "validate": "Read back applied hashes/values; structural only, no graphical checks.", "rollback": "Undo provably owned values/bytes; preserve subsequent local edits.", "recover": "Recover an interrupted journal only if each current file matches its pre/post image."}[command])
+        operation.add_argument("--target", required=True, help="Explicit simulation or prepared build/local-targets/<name> descriptor; no HOME default.")
+        operation.add_argument("--state-root", required=True, help="Dedicated build/state/<name>; local operation state, not portable candidate content.")
+        operation.add_argument("--format", choices=("text", "json"), default="text")
+        if command == "apply":
+            operation.add_argument("--candidate", required=True)
+            operation.add_argument("--plan", required=True, help="Saved JSON plan under build/; exact decisions and inputs are rechecked.")
+        if command in ("apply", "rollback", "recover"):
+            operation.add_argument("--approve", required=True, help="SHA-256 of reviewed plan for apply; 'rollback' or 'recover' for those explicit operations.")
+        if command == "rollback":
+            operation.add_argument("--replace", action="append", default=[], metavar="RESOURCE:KEY", help="Explicit bounded resolution of a changed managed value in favor of its original value. Never bypass structural blocks.")
+    features = sub.add_parser("feature", help="Work-document scaffolding only; no code, branches or commits.")
+    feature_sub = features.add_subparsers(dest="feature_command", required=True)
+    feature_new = feature_sub.add_parser("new", help="Create only work/features/<slug>.md from the template; rejects existing files and symlinks.")
+    feature_new.add_argument("slug", help="Lowercase ASCII letter then letters/digits with single hyphens, 1-64 characters; relative to checkout, never cwd.")
+    args = parser.parse_args(argv)
+    try:
+        if args.command in ("check", "feature"):
+            workflow = {"__name__": "heartchy_feature"}
+            exec(compile(read_project("tools/heartchy-feature.py"), "tools/heartchy-feature.py", "exec"), workflow)
+            if args.command == "feature":
+                target = workflow["new"](globals(), args.slug)
+                print(f"CREATED {target} — DESIGN; no code, approval or runtime changes")
+                return 0
+        if args.command == "plan":
+            namespace = {"__name__": "heartchy_plan"}
+            exec(compile(read_project("tools/heartchy-plan.py"), "tools/heartchy-plan.py", "exec"), namespace)
+            return namespace["run"](globals(), args)
+        if args.command in ("apply", "validate", "rollback", "recover"):
+            namespace = {"__name__": "heartchy_apply"}
+            exec(compile(read_project("tools/heartchy-apply.py"), "tools/heartchy-apply.py", "exec"), namespace)
+            return namespace["run"](globals(), args)
+        if args.command == "stage":
+            output_name(args.output)
+        payload = validate()
+        if args.command == "check":
+            guides, docs = workflow["check"](globals())
+            print("PASS check: 3 Core resources, 9 candidates, hashes, scope and references")
+            print(f"PASS workflow: {guides} skills, template contract and {docs} linked documents")
+        else:
+            target = stage(args.output, payload)
+            print(f"PASS stage: {target}\nLOCAL REVIEW CANDIDATE — NOT INSTALLED — NOT PUBLISHED")
+        return 0
+    except (Invalid, OSError, ValueError, UnicodeError, KeyError, TypeError, AttributeError) as exc:
+        print(f"FAIL {args.command}: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,9 @@
+{
+  "source": "Installed omarchy-settings 4.0.4-1, /usr/share/omarchy/config",
+  "license": "../omarchy/LICENSE",
+  "files": {
+    "looknfeel.lua": "48f0e9b8248c8f19a1cc6c212e22279cb7fa55f4a88e4dcbb6ebd90f613b5ea6",
+    "shell.json": "b16dc9646bf68e81643522cef504795d97cb5016d80d8b65784bde44f2c0883f"
+  },
+  "shell.toml": "absent in stock config"
+}

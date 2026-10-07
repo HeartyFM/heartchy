@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "imported_at": "2026-10-04T00:16:36.014640+00:00",
+  "input_collection": "heartchy-core-validation/20261003T232519.295087Z",
+  "locator_note": "Original evidence was supplied locally by Diego; it is not read by check, stage or tests. Only hashes and a bounded summary are retained.",
+  "original_customization_commit": null,
+  "original_customization_commit_status": "UNKNOWN: no Git provenance supplied for the personalization",
+  "inputs": [
+    {
+      "file": "minimal/looknfeel.lua",
+      "sha256": "4e43b6caa5046cfc20a3b2aaa4df9bca59925be23e16fca635184b06fb4835ca"
+    },
+    {
+      "file": "minimal/shell.toml",
+      "sha256": "54ebc6256c2eb28293d75fa578f277e57faf1261d758570444ef94a22953538c"
+    },
+    {
+      "file": "minimal/shell.json",
+      "sha256": "2d3646e09525add9d7a8d512bb3eb8a073989cd6d0e5e51ada4ac4afe8e071d9"
+    },
+    {
+      "file": "candidate-sources.json",
+      "sha256": "3ed944296c55dcaf6f4957928bac81496752dc4cd5c0ea25f5f0547f8e03cb8a"
+    },
+    {
+      "file": "evidence/validation.json",
+      "sha256": "12dad435ef01d8750a5b6e36fd2aa0f65c967e5b8d84bdfe64325de5df97cbd5"
+    },
+    {
+      "file": "evidence/restoration.json",
+      "sha256": "d577c077fd7fd3349f226be474b62e58b7c2041519216cb0726e4bf7aac9e9ad"
+    }
+  ],
+  "transformations": [
+    {
+      "input": "minimal/looknfeel.lua",
+      "output": "core/hypr/heartchy.lua",
+      "changes": [
+        "Replace the introductory comment with provenance and visual-preference intent.",
+        "Remove decoration.rounding=0, already stock and outside the nine candidates.",
+        "Keep all blur profile values, neutral borders, the historical layer-rule name, terminal rule and slidevert unchanged."
+      ]
+    },
+    {
+      "input": "minimal/shell.toml",
+      "output": "core/shell/cristal.toml",
+      "changes": [
+        "Rename only; byte-identical owned token subset."
+      ]
+    },
+    {
+      "input": "minimal/shell.json",
+      "output": "core/shell/settings-intent.json",
+      "changes": [
+        "Extract only bar.transparent.",
+        "Discard version, idle, bar.id, position, centerAnchor, layout, widget options and plugins.",
+        "This intent is not an installable Omarchy shell.json."
+      ]
+    }
+  ],
+  "historical_evidence": {
+    "environment": {
+      "omarchy": "4.0.4-1.1",
+      "omarchy-settings": "4.0.4-1",
+      "hyprland": "0.56.2-2",
+      "quickshell": "0.3.1-1"
+    },
+    "candidates": {
+      "1": "PASS",
+      "2": "PASS",
+      "3": "PASS",
+      "4": "PASS",
+      "5": "PASS",
+      "6": "PASS",
+      "7": "PASS",
+      "8": "PASS",
+      "9": "PASS"
+    },
+    "local_plugins_visible": 0,
+    "frosted_files_visible": 0,
+    "configerrors": "",
+    "new_shell_qml_errors": [],
+    "restored_original_hashes": true,
+    "limits": [
+      "Visual runtime checks cover stock menu, audio, clock and stock Commons/Ui controls; no authentication or lock cycle was executed.",
+      "Terminal compositor opacity is 1; native terminal background transparency remains possible.",
+      "slidevert works with dwindle; the historic Scrolling renderer justification was not reproduced.",
+      "Stock portal warning and read-only agent cache warning are separate from QML TypeErrors.",
+      "Not evidence for Rafa, other versions/themes, authentication or energy performance.",
+      "New integration/module loading and future configuration transforms have not been graphically tested."
+    ]
+  }
+}

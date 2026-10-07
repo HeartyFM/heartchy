@@ -1,0 +1,7 @@
+# Synthetic recipient comment; must remain byte-identical.
+[menu]
+background-alpha = 0.5
+[font]
+base-size = 19
+[personal]
+note = "SYNTHETIC_UNMANAGED_TOML"

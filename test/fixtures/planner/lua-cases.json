@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "note": "Synthetic input recipes; module variants derive from the Core only in disposable test copies. No historical installation is claimed.",
+  "cases": [
+    {
+      "name": "first",
+      "module": "absent",
+      "base": "none",
+      "connection": "personal",
+      "module_decision": "MANAGED_CHANGE",
+      "connection_decision": "MANAGED_CHANGE"
+    },
+    {
+      "name": "repeat",
+      "module": "proposal",
+      "base": "proposal",
+      "connection": "managed",
+      "module_decision": "NO_CHANGE",
+      "connection_decision": "NO_CHANGE"
+    },
+    {
+      "name": "module-update",
+      "module": "old",
+      "base": "old",
+      "connection": "managed",
+      "module_decision": "MANAGED_CHANGE",
+      "connection_decision": "NO_CHANGE"
+    },
+    {
+      "name": "module-local",
+      "module": "local",
+      "base": "proposal",
+      "connection": "managed",
+      "module_decision": "LOCAL_PRESERVED",
+      "connection_decision": "BLOCKED"
+    },
+    {
+      "name": "module-conflict",
+      "module": "local",
+      "base": "old",
+      "connection": "managed",
+      "module_decision": "CONFLICT_PENDING",
+      "connection_decision": "BLOCKED"
+    },
+    {
+      "name": "existing-unowned",
+      "module": "local",
+      "base": "none",
+      "connection": "personal",
+      "module_decision": "LOCAL_PRESERVED",
+      "connection_decision": "BLOCKED"
+    },
+    {
+      "name": "unowned-equivalent",
+      "module": "proposal",
+      "base": "none",
+      "connection": "equivalent",
+      "module_decision": "NO_CHANGE",
+      "connection_decision": "NO_CHANGE"
+    },
+    {
+      "name": "unowned-marked",
+      "module": "proposal",
+      "base": "none",
+      "connection": "marked",
+      "module_decision": "NO_CHANGE",
+      "connection_decision": "NO_CHANGE"
+    },
+    {
+      "name": "deleted-module",
+      "module": "absent",
+      "base": "proposal",
+      "connection": "managed",
+      "module_decision": "LOCAL_PRESERVED",
+      "connection_decision": "BLOCKED"
+    },
+    {
+      "name": "missing-personal-file",
+      "module": "proposal",
+      "base": "none",
+      "connection": "absent",
+      "module_decision": "NO_CHANGE",
+      "connection_decision": "BLOCKED"
+    },
+    {
+      "name": "deleted-load",
+      "module": "proposal",
+      "base": "proposal",
+      "connection": "deleted-managed",
+      "module_decision": "NO_CHANGE",
+      "connection_decision": "LOCAL_PRESERVED"
+    }
+  ]
+}

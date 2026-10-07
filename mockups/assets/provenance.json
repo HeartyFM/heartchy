@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "omarchy": {
+    "file": "omarchy.txt",
+    "sha256": "f98c966b1670d71ffc26620a6ff885a73ab355b370bff6082cea3215ee580a29",
+    "source": "/usr/share/omarchy/logo.txt",
+    "installed_package": "omarchy 4.0.4-1.1",
+    "method": "Byte-for-byte copy, no whitespace or proportion changes. ANSI 32 presentation from installed bin/omarchy-show-logo."
+  },
+  "heartchy": {
+    "file": "heartchy.txt",
+    "sha256": "378581ceafaae7d0c15ce306e3cba313275a2bcf6983aafd681f16aabd3cd24c",
+    "generator_url": "https://github.com/omacom/omarchy/blob/035ce29f03bdd97a09af80ef5f2d22d7a98930d6/bin/omarchy-ascii",
+    "generator_commit": "035ce29f03bdd97a09af80ef5f2d22d7a98930d6",
+    "generator_sha256": "9640bc210e8cfe016459bc7b4917344403fe49f67ce013f2cff118cdafdcf7c5",
+    "font": "Delta Corps Priest 1",
+    "font_author": "CoSMiC cHiLD",
+    "method": "UX-002 basis generated once by reviewed fixed upstream Bash/awk using Delta Corps Priest 1. UX-003 manually harmonizes the text with the unmodified installed Omarchy wordmark; only final text is distributed, no font or generator. Pink identity is #ff87af, contrast-adjusted shade in light previews.",
+    "limitation": "Heartchy is a manually tuned derivative, not an unmodified font output or an official Omarchy logo.",
+    "generator_output_sha256": "246a7bd38bd140c4eb3c65feb24de7e9ed65aad815239d4b3f59a51d6e8a6234",
+    "manual_adjustments": {
+      "H": "Both H glyphs use stock columns [59,71): three-cell stems, three-cell counter, half-block crossbar and tapered foot.",
+      "E": "Redrawn from the stock C profile: same stem, upper/lower counter; shorter half-block middle arm.",
+      "A": "Stock columns [27,37), including crossbar and taper, replaces the wider generated closed crossbar.",
+      "R": "Stock columns [38,48), including its tenth-row descender and compact bowl.",
+      "T": "New symmetrical nine-cell beam with half-block caps and a centered three-cell stem; replaces the generated diagonal overhang and ornamental foot. Stem tapers like stock H/A.",
+      "C": "Stock columns [50,59), preserves upper/lower open counter and compact bowl.",
+      "Y": "Stock columns [72,81), preserves counter/crossbar, lower bowl and tapered base.",
+      "spacing": "Two-cell inter-glyph gap, ten-row canvas aligned with stock; no scaling, clipping or edits to Omarchy asset."
+    }
+  }
+}

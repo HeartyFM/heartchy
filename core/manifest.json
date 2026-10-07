@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "kind": "heartchy-core-inventory",
+  "application": "separate-explicit-plan",
+  "resources": [
+    {
+      "id": "hypr",
+      "source": "core/hypr/heartchy.lua",
+      "format": "lua",
+      "sha256": "5d1c413cfd7ecc8a1b3e1814d7b6be888cfa8c3b3a15930e51e30509cfaa271a",
+      "managed": [
+        "animation:workspaces",
+        "decoration.blur.brightness",
+        "decoration.blur.contrast",
+        "decoration.blur.enabled",
+        "decoration.blur.passes",
+        "decoration.blur.size",
+        "decoration.blur.vibrancy",
+        "general.border_size",
+        "general.col.active_border",
+        "general.col.inactive_border",
+        "group.col.border_active",
+        "group.col.border_inactive",
+        "layer:omarchy-glass-surfaces",
+        "window:tag=terminal.opacity"
+      ],
+      "contract": "docs/architecture.md#hypr"
+    },
+    {
+      "id": "shell_tokens",
+      "source": "core/shell/cristal.toml",
+      "format": "toml",
+      "sha256": "54ebc6256c2eb28293d75fa578f277e57faf1261d758570444ef94a22953538c",
+      "managed": [
+        "controls.focus-border",
+        "controls.focus-border-alpha",
+        "controls.focus-border-width",
+        "controls.focus-fill-alpha",
+        "controls.hover-cursor-border",
+        "controls.hover-cursor-border-alpha",
+        "controls.hover-cursor-border-width",
+        "controls.hover-cursor-fill-alpha",
+        "controls.normal-border",
+        "controls.normal-border-alpha",
+        "controls.normal-border-width",
+        "controls.normal-fill-alpha",
+        "controls.pressed-fill-alpha",
+        "controls.selected-border",
+        "controls.selected-border-alpha",
+        "controls.selected-border-width",
+        "controls.selected-fill-alpha",
+        "controls.selection-fill-alpha",
+        "hyprland.active-border",
+        "hyprland.active-border-foreground",
+        "image-picker.scrim-alpha",
+        "image-picker.selected-border",
+        "image-picker.selected-border-alpha",
+        "image-picker.unselected-border",
+        "image-picker.unselected-border-alpha",
+        "lock.background-alpha",
+        "lock.border",
+        "lock.border-active",
+        "lock.border-alpha",
+        "lock.border-error",
+        "lock.border-width",
+        "lock.selection",
+        "lock.selection-alpha",
+        "menu.background-alpha",
+        "menu.border",
+        "menu.border-alpha",
+        "menu.border-width",
+        "menu.scrim-alpha",
+        "menu.selected-background",
+        "menu.selected-background-alpha",
+        "menu.selected-border",
+        "menu.selected-border-alpha",
+        "menu.selected-border-width",
+        "notifications.background-alpha",
+        "notifications.border",
+        "notifications.border-alpha",
+        "notifications.border-width",
+        "polkit.background-alpha",
+        "polkit.border",
+        "polkit.border-alpha",
+        "polkit.border-error",
+        "polkit.border-width",
+        "polkit.scrim-alpha",
+        "popups.background-alpha",
+        "popups.border",
+        "popups.border-alpha",
+        "popups.border-width",
+        "tooltip.background-alpha",
+        "tooltip.border",
+        "tooltip.border-alpha",
+        "tooltip.border-width"
+      ],
+      "contract": "docs/architecture.md#shell_tokens"
+    },
+    {
+      "id": "shell_intent",
+      "source": "core/shell/settings-intent.json",
+      "format": "intent-json",
+      "sha256": "3d6d9172050b3623d8165f51d661c9687dbcb1d9982266a6051755e3e49fe656",
+      "managed": [
+        "bar.transparent"
+      ],
+      "contract": "docs/architecture.md#shell_intent"
+    }
+  ],
+  "candidates": [
+    {
+      "id": 1,
+      "resource": "hypr"
+    },
+    {
+      "id": 2,
+      "resource": "hypr"
+    },
+    {
+      "id": 3,
+      "resource": "hypr"
+    },
+    {
+      "id": 4,
+      "resource": "hypr"
+    },
+    {
+      "id": 5,
+      "resource": "hypr"
+    },
+    {
+      "id": 6,
+      "resource": "shell_tokens"
+    },
+    {
+      "id": 7,
+      "resource": "shell_tokens"
+    },
+    {
+      "id": 8,
+      "resource": "shell_tokens"
+    },
+    {
+      "id": 9,
+      "resource": "shell_intent"
+    }
+  ],
+  "references": [
+    "docs/provenance.json",
+    "docs/upstream-evidence.json"
+  ]
+}

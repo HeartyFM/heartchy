@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "installed": "0.2.0",
+  "releases": [
+    {
+      "name": "Heartchy Base",
+      "version": "0.3.1",
+      "kind": "minor",
+      "date": "2026-11-19",
+      "report": {
+        "description": "Una revisión acumulativa de Heartchy Base centrada en consistencia y pequeños detalles.",
+        "changes": [
+          "Ajustes acumulativos sobre la versión principal.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    },
+    {
+      "name": "Heartchy Base",
+      "version": "0.3.0",
+      "kind": "major",
+      "date": "2026-11-15",
+      "summary": "Una base compartida para dar espacio a las próximas ideas de Heartchy.",
+      "report": {
+        "description": "Una base compartida para dar espacio a las próximas ideas de Heartchy.",
+        "changes": [
+          "Base visual compartida más coherente.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    },
+    {
+      "name": "Heartchy Cristal",
+      "version": "0.2.2",
+      "kind": "minor",
+      "date": "2026-10-15",
+      "report": {
+        "description": "Una revisión acumulativa de Heartchy Cristal centrada en consistencia y pequeños detalles.",
+        "changes": [
+          "Ajustes acumulativos sobre la versión principal.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    },
+    {
+      "name": "Heartchy Cristal",
+      "version": "0.2.1",
+      "kind": "minor",
+      "date": "2026-10-09",
+      "report": {
+        "description": "Una revisión acumulativa de Heartchy Cristal centrada en consistencia y pequeños detalles.",
+        "changes": [
+          "Ajustes acumulativos sobre la versión principal.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    },
+    {
+      "name": "Heartchy Cristal",
+      "version": "0.2.0",
+      "kind": "major",
+      "date": "2026-10-02",
+      "summary": "Superficies translúcidas, bordes neutros y controles con carácter Cristal.",
+      "report": {
+        "description": "Superficies translúcidas, bordes neutros y controles con carácter Cristal.",
+        "changes": [
+          "Base visual compartida más coherente.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    },
+    {
+      "name": "Heartchy Core",
+      "version": "0.1.0",
+      "kind": "major",
+      "date": "2026-09-12",
+      "summary": "El primer núcleo visual sobre Omarchy: pequeño, compartible y reconocible.",
+      "report": {
+        "description": "El primer núcleo visual sobre Omarchy: pequeño, compartible y reconocible.",
+        "changes": [
+          "Base visual compartida más coherente.",
+          "Navegación y estados más claros."
+        ],
+        "apps": [],
+        "components": [
+          "Core visual y superficies Cristal.",
+          "Tarjetas y controles de la maqueta."
+        ],
+        "fixes": [
+          "Espaciado y legibilidad revisados.",
+          "Selección conservada al volver."
+        ],
+        "notes": [
+          "Contenido ficticio para revisar la experiencia. No describe una release publicada."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "heartchy-managed-state",
+  "successful": true,
+  "application_id": "synthetic-fixture-application",
+  "resources": {
+    "shell_tokens": {
+      "contract": "omarchy-shell-toml-key-merge-v1",
+      "values": {
+        "menu.background-alpha": {
+          "state": "present",
+          "value": 0.5
+        }
+      }
+    },
+    "shell_intent": {
+      "contract": "omarchy-shell-json-v1",
+      "values": {
+        "bar.transparent": {
+          "state": "present",
+          "value": false
+        }
+      }
+    }
+  }
+}

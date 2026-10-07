@@ -1,0 +1,561 @@
+{
+  "kind": "reviewed-public-source-snapshot",
+  "development_commit": "b804cd7fa66055d1d7175a602193d4ff46c6a5cb",
+  "history": "New publication snapshot created now; does not pretend to contain private development history. No reset/rebase/merge of the development branch.",
+  "transformations": [
+    {
+      "path": "docs/core-application.md",
+      "before_sha256": "038bb08a6b0700b1e2a5c30762760d394e96761cbd9ab65214ec42000fe10035",
+      "after_sha256": "cf04c1365ac55039e44d32862e1bd894b8014a492f2fa875730b4d4c1fd56bb8",
+      "change": "Anonymize documented local example path only; not runtime code."
+    },
+    {
+      "path": "work/features/development-foundation.md",
+      "before_sha256": "6e849634a2abc839d2e24049a4273987c94651ff71f2860268fd25897dc87bee",
+      "after_sha256": "527b74a90cc0597dd33a101a528b111bef41f376ff3c8dbf98096e5a551e7f65",
+      "change": "Anonymize documented local example path only; not runtime code."
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "f19e16b7b4f15be868dad8d42c2e377d68646e6ea7f6514c5397ca132e276f5e",
+      "bytes": 306
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "2de830deb92ec4dcd02f36969eb343a2cf75276762c76b052ab74843f30f3f18",
+      "bytes": 3070
+    },
+    {
+      "path": "NOTICE.md",
+      "sha256": "2f9b9f0333f3c4cf570e72b4535447fcc3ec3bd1af9559fef424cb2f6501d277",
+      "bytes": 3773
+    },
+    {
+      "path": "README.md",
+      "sha256": "c1296fc28ec01b94e564f63d09c14955f6d946627c8442fe3b9cefa2049fc69a",
+      "bytes": 4459
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "c856acbb0262c4800f4e8ca8deeb5ee65dd6f790bb27eec293281e1eda9f0304",
+      "bytes": 1690
+    },
+    {
+      "path": "agents/skills/cli-command.md",
+      "sha256": "c000310a22d98838f44c44e6019bc3413f9a39ebc2bb8c3d6314ea960e621288",
+      "bytes": 1502
+    },
+    {
+      "path": "agents/skills/core-config.md",
+      "sha256": "71873cabc767fc49cb64667c9be2027b7615da1066b0134b387f7a8d50e7e4bd",
+      "bytes": 1700
+    },
+    {
+      "path": "agents/skills/feature-development.md",
+      "sha256": "ea1bbde6c8a96f34deeca41b15b12049a4768b69d87ea8cbf9a2b12feef1d6f4",
+      "bytes": 2629
+    },
+    {
+      "path": "agents/skills/migration.md",
+      "sha256": "4483c2ff2ca09323a64345648af18da4fb81bb529faed25886ceded69d79fa31",
+      "bytes": 1476
+    },
+    {
+      "path": "agents/skills/privileged-integration.md",
+      "sha256": "004dfc0a7e3e23ac3f96bd715f74220c3b65ecb6a05889f3ac0990fa81857ad8",
+      "bytes": 1429
+    },
+    {
+      "path": "agents/skills/release-preparation.md",
+      "sha256": "c666a3c078863a90bbdd6ba17d53fe80d053b60aa2bbefa011e718a92a010931",
+      "bytes": 2184
+    },
+    {
+      "path": "agents/skills/service-development.md",
+      "sha256": "b2e57fe9368382ce23b78a3f6c88081f092dd7166ec9f641dd46d90a28510238",
+      "bytes": 1389
+    },
+    {
+      "path": "agents/skills/shell-ui.md",
+      "sha256": "2d45da3cfe2289de6798a327299f67b7ab4c879211adbfd38ee043ed47321995",
+      "bytes": 2992
+    },
+    {
+      "path": "agents/skills/testing.md",
+      "sha256": "c7bc651587dc00f731b6902e50f1a90c9854deb74b92102b55cffa0f9ec09162",
+      "bytes": 2195
+    },
+    {
+      "path": "agents/skills/upstream-compatibility.md",
+      "sha256": "a5e99fe573158aa982acf916ea920c66a0749d0f44f2872bbb872b9fcb09b3b1",
+      "bytes": 1429
+    },
+    {
+      "path": "agents/skills/visual-verification.md",
+      "sha256": "70ad56b8816ccdccdf7b545d1d7f04b63c756459cd37567efcfb73d0b286a662",
+      "bytes": 1408
+    },
+    {
+      "path": "bin/heartchy-update",
+      "sha256": "4949cc5ebd37d1c7a372edb477abfb28bbe311779f1bbf160a0e06b70ade32d2",
+      "bytes": 277
+    },
+    {
+      "path": "bin/heartchy-updates-mockup",
+      "sha256": "c2313fdf037bbf22c0858271b877a49e1feea1d602f4501ace938da2bd4a9721",
+      "bytes": 306
+    },
+    {
+      "path": "core/hypr/heartchy.lua",
+      "sha256": "5d1c413cfd7ecc8a1b3e1814d7b6be888cfa8c3b3a15930e51e30509cfaa271a",
+      "bytes": 1119
+    },
+    {
+      "path": "core/manifest.json",
+      "sha256": "d776dd8c8d9c87a130f193625e3c3296ac0771732227249bd9bcfe629d59ccbb",
+      "bytes": 4234
+    },
+    {
+      "path": "core/shell/cristal.toml",
+      "sha256": "54ebc6256c2eb28293d75fa578f277e57faf1261d758570444ef94a22953538c",
+      "bytes": 1652
+    },
+    {
+      "path": "core/shell/settings-intent.json",
+      "sha256": "3d6d9172050b3623d8165f51d661c9687dbcb1d9982266a6051755e3e49fe656",
+      "bytes": 43
+    },
+    {
+      "path": "docs/architecture.md",
+      "sha256": "6d18935bacb4dfe229fa30b304bafe511347e1d3bfd468f353b6fc88e7239494",
+      "bytes": 44474
+    },
+    {
+      "path": "docs/core-application.md",
+      "sha256": "cf04c1365ac55039e44d32862e1bd894b8014a492f2fa875730b4d4c1fd56bb8",
+      "bytes": 9826
+    },
+    {
+      "path": "docs/development-upstream.json",
+      "sha256": "137bd7e8675a60f3eadbc7ba49c67c906f878654fd109bd95a69d745bb6cc1ae",
+      "bytes": 4389
+    },
+    {
+      "path": "docs/development.md",
+      "sha256": "bcfabb027742bc824a0457407ebc7c2a0f8c6c8bed1d47bf78b1c87d7bc9744d",
+      "bytes": 11832
+    },
+    {
+      "path": "docs/provenance.json",
+      "sha256": "9adb647fd95ba8579c2843b9373e1bd803c3d2bbde6db54eb9d5fa3e5a9ce497",
+      "bytes": 3465
+    },
+    {
+      "path": "docs/testing.md",
+      "sha256": "48bca9d19b385a7fc28dfc38b9574e52eac3f3344608bdb83003bfb982f039a8",
+      "bytes": 5147
+    },
+    {
+      "path": "docs/updater.md",
+      "sha256": "65216e33ddf60e42b44612a18a05c5ba6f2c3b44f0e450bc03be3f1f694c9715",
+      "bytes": 13603
+    },
+    {
+      "path": "docs/updates-mockup.md",
+      "sha256": "d136778c623513fa3091adf1624200b187242775a86b8b55f73b532aef6561cf",
+      "bytes": 26347
+    },
+    {
+      "path": "docs/upstream-contracts.md",
+      "sha256": "79705509e8cd13c14c34ce33de33a371711c7bcd0f86fa265f67024d743f21f6",
+      "bytes": 3355
+    },
+    {
+      "path": "docs/upstream-evidence.json",
+      "sha256": "8c8ba6e6aa7573ca66697793a2f0b81cc6b545887c22a7596ea7db2820fd1faa",
+      "bytes": 23225
+    },
+    {
+      "path": "docs/upstream.md",
+      "sha256": "be323ecc4c238a5b3b9b37e4c00fed50f619e76fa6d5406e6e5c5899bf3cae90",
+      "bytes": 11872
+    },
+    {
+      "path": "mockups/animation_preview.py",
+      "sha256": "a998c2d18e0245e05f2ebf62a121d5085526ead6cb84b62532afe74e17054588",
+      "bytes": 12179
+    },
+    {
+      "path": "mockups/assets/heartchy.txt",
+      "sha256": "378581ceafaae7d0c15ce306e3cba313275a2bcf6983aafd681f16aabd3cd24c",
+      "bytes": 1667
+    },
+    {
+      "path": "mockups/assets/omarchy.txt",
+      "sha256": "f98c966b1670d71ffc26620a6ff885a73ab355b370bff6082cea3215ee580a29",
+      "bytes": 1525
+    },
+    {
+      "path": "mockups/assets/provenance.json",
+      "sha256": "0da25a47f4b83e04a82784e34621a65fc71f43620b4a58ef2bf748bb8c6d40ad",
+      "bytes": 2376
+    },
+    {
+      "path": "mockups/updates.json",
+      "sha256": "90c7c522220a9f8640e2efeed3a6eefc0cec8004af5dd38bcae1e59ebf7d8b06",
+      "bytes": 5133
+    },
+    {
+      "path": "mockups/updates.py",
+      "sha256": "5f3a7d839e5935bae1276efcaebde2a19060012a39b939b04993aceae766a633",
+      "bytes": 64540
+    },
+    {
+      "path": "releases/first-test.json",
+      "sha256": "2330782ef8662ef200484d7731c03debf4c9f3d5632d9ee38f810fd931f7b6a5",
+      "bytes": 1114
+    },
+    {
+      "path": "test/all",
+      "sha256": "640cbc1758bb21f778cb7894d74eaf4c6e1508127ceb31cb6701fe45f1fb0f0e",
+      "bytes": 3018
+    },
+    {
+      "path": "test/fixtures/omarchy/LICENSE",
+      "sha256": "717ba1949502290f8e47688ae2e323acd06c8ca47aec9f7596b15f678c1af4a2",
+      "bytes": 1063
+    },
+    {
+      "path": "test/fixtures/omarchy/bootstrap.lua",
+      "sha256": "ee16813516877df26984a78baf389f153af302e0d11736582cfbd0e002f2d531",
+      "bytes": 921
+    },
+    {
+      "path": "test/fixtures/omarchy/defaults.lua",
+      "sha256": "e566ebf77176b0253f07fc1d57085116fe370f527601d22597748136d0f3f2e5",
+      "bytes": 806
+    },
+    {
+      "path": "test/fixtures/omarchy/window-helper.lua",
+      "sha256": "55a79b07e2d286b8b4895ff33680fe6d0eb12e9344acd3870acb0078d9f78d34",
+      "bytes": 250
+    },
+    {
+      "path": "test/fixtures/planner/README.md",
+      "sha256": "971a8211373cd56f547b133a0a79218f46506d1b98cc0889d7d7ade8044d1f11",
+      "bytes": 390
+    },
+    {
+      "path": "test/fixtures/planner/conflict/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/conflict/config/omarchy/shell.json",
+      "sha256": "804c0467faa1b414bcc248c28edb56a9074ef1f51e3a6d86ce3f5c3a1eceb317",
+      "bytes": 192
+    },
+    {
+      "path": "test/fixtures/planner/conflict/config/omarchy/shell.toml",
+      "sha256": "da13ed2f9d6e1263e61e47cceb856cf7b0ea3181dc9ac14250be1fcb14c2b73d",
+      "bytes": 156
+    },
+    {
+      "path": "test/fixtures/planner/conflict/state.json",
+      "sha256": "6fd4cc7692150d75f55bf3a88d24506c9ecedfe2e5a2084a8e01ed53702f1898",
+      "bytes": 555
+    },
+    {
+      "path": "test/fixtures/planner/conflict/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/planner/entrypoint-cases.json",
+      "sha256": "a4f30c812ad9acce12644f3c2d702ff9b9e33f2205b324edc4a9e79aa313d71b",
+      "bytes": 1414
+    },
+    {
+      "path": "test/fixtures/planner/first/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/first/config/omarchy/shell.json",
+      "sha256": "28fe0beab01b4d310c1335d53bfbad44b3261022042e2c449d37727d3c4f9590",
+      "bytes": 193
+    },
+    {
+      "path": "test/fixtures/planner/first/config/omarchy/shell.toml",
+      "sha256": "eff697d8bd019d7664a0f9966354cc0d026abf983464043fc9ae664f1ede488a",
+      "bytes": 157
+    },
+    {
+      "path": "test/fixtures/planner/first/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/planner/foreign-shell.toml",
+      "sha256": "d9e8d8e221c0db515fb4c63011fab7c2ce6d2e76d5dfbf9da8da5be008ce2a5a",
+      "bytes": 581
+    },
+    {
+      "path": "test/fixtures/planner/invalid/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/invalid/config/omarchy/shell.json",
+      "sha256": "b18193d8a75e46df109847cf83b7eae10cc0c204699a53ac6e9244eb60bb7609",
+      "bytes": 12
+    },
+    {
+      "path": "test/fixtures/planner/invalid/config/omarchy/shell.toml",
+      "sha256": "59a2be918c6b22aa69e1cf5f360dea259f6c26d6213a07d9193d7c3218f91b8c",
+      "bytes": 31
+    },
+    {
+      "path": "test/fixtures/planner/invalid/state.json",
+      "sha256": "9e412909dee9996c3cb206694246cf3b62f5d961e79ba94e7a1ca69632af99c8",
+      "bytes": 556
+    },
+    {
+      "path": "test/fixtures/planner/invalid/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/planner/local/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/local/config/omarchy/shell.json",
+      "sha256": "28fe0beab01b4d310c1335d53bfbad44b3261022042e2c449d37727d3c4f9590",
+      "bytes": 193
+    },
+    {
+      "path": "test/fixtures/planner/local/config/omarchy/shell.toml",
+      "sha256": "eff697d8bd019d7664a0f9966354cc0d026abf983464043fc9ae664f1ede488a",
+      "bytes": 157
+    },
+    {
+      "path": "test/fixtures/planner/local/state.json",
+      "sha256": "1b55708900ace4fdfeb9bc25b79432e403cd75685d0a9e62daed7bad62939019",
+      "bytes": 556
+    },
+    {
+      "path": "test/fixtures/planner/local/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/planner/lua-cases.json",
+      "sha256": "000ad33aab1de0efe54d59a4b3f1408b9bfbc2d3a940c94ab66bdd600d637e23",
+      "bytes": 2479
+    },
+    {
+      "path": "test/fixtures/planner/lua-first/config/hypr/hyprland.lua",
+      "sha256": "39974ad22f150e7b47f407a808ed60299dbec53a80f7908425e5b153ace3fe8d",
+      "bytes": 1043
+    },
+    {
+      "path": "test/fixtures/planner/lua-first/config/hypr/looknfeel.lua",
+      "sha256": "0ad25ff7c6b40731ebe7ba7132e606b65a1c0b29a36d9ec3153d8eaa7a4839e8",
+      "bytes": 294
+    },
+    {
+      "path": "test/fixtures/planner/lua-first/target.json",
+      "sha256": "17256d8bdf3cfbe8b8b9c0cce33fc006b6a51eb74238af8ec6fb3a610ce9d2da",
+      "bytes": 285
+    },
+    {
+      "path": "test/fixtures/planner/managed/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/managed/config/omarchy/shell.json",
+      "sha256": "28fe0beab01b4d310c1335d53bfbad44b3261022042e2c449d37727d3c4f9590",
+      "bytes": 193
+    },
+    {
+      "path": "test/fixtures/planner/managed/config/omarchy/shell.toml",
+      "sha256": "8b85e8f5c86849aef5f862c66b3f9e24a09ffd3f50194ae046e0dd01885b830c",
+      "bytes": 156
+    },
+    {
+      "path": "test/fixtures/planner/managed/state.json",
+      "sha256": "9e412909dee9996c3cb206694246cf3b62f5d961e79ba94e7a1ca69632af99c8",
+      "bytes": 556
+    },
+    {
+      "path": "test/fixtures/planner/managed/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/planner/same/config/hypr/looknfeel.lua",
+      "sha256": "edb7edd3fff3e666866536bb19053dd8eaa0811be650d0bc2078d478f177aa99",
+      "bytes": 108
+    },
+    {
+      "path": "test/fixtures/planner/same/config/omarchy/shell.json",
+      "sha256": "804c0467faa1b414bcc248c28edb56a9074ef1f51e3a6d86ce3f5c3a1eceb317",
+      "bytes": 192
+    },
+    {
+      "path": "test/fixtures/planner/same/config/omarchy/shell.toml",
+      "sha256": "aee080387864d8a29d93ed6985ea335498d4879c9d5e3328226d7bee8421dd61",
+      "bytes": 157
+    },
+    {
+      "path": "test/fixtures/planner/same/state.json",
+      "sha256": "9e412909dee9996c3cb206694246cf3b62f5d961e79ba94e7a1ca69632af99c8",
+      "bytes": 556
+    },
+    {
+      "path": "test/fixtures/planner/same/target.json",
+      "sha256": "b7f49be455aa9f2bff32e21deb40d9af3c82a571a7723d07dd3bcbf318dc4217",
+      "bytes": 225
+    },
+    {
+      "path": "test/fixtures/updates-stock/looknfeel.lua",
+      "sha256": "48f0e9b8248c8f19a1cc6c212e22279cb7fa55f4a88e4dcbb6ebd90f613b5ea6",
+      "bytes": 1246
+    },
+    {
+      "path": "test/fixtures/updates-stock/provenance.json",
+      "sha256": "54dc1c1474303b1d98a998332720d7cb1c901d0dec541737d1bf6e25e9eb00b6",
+      "bytes": 349
+    },
+    {
+      "path": "test/fixtures/updates-stock/shell.json",
+      "sha256": "b16dc9646bf68e81643522cef504795d97cb5016d80d8b65784bde44f2c0883f",
+      "bytes": 1194
+    },
+    {
+      "path": "test/lua-loading.lua",
+      "sha256": "e8eb41ee67ab2abbd8d95c096560171d11640e297fadaf921ad3642f2b9a4608",
+      "bytes": 2886
+    },
+    {
+      "path": "test/release-artifact",
+      "sha256": "a82346102a85a527d449235aa85d54623e932eae70c650591c3213c0c2f9222c",
+      "bytes": 4231
+    },
+    {
+      "path": "test/suite.py",
+      "sha256": "b7aca115934d04abd7cbe055a34a2b9b5180d485df5b98909322bdc68c0c7a2f",
+      "bytes": 177200
+    },
+    {
+      "path": "test/update_tests.py",
+      "sha256": "d8b8629f3848bda2c57a81d5bab505f1be7c16a731cf88a9af013da048d46bd4",
+      "bytes": 34055
+    },
+    {
+      "path": "tools/heartchy-apply.py",
+      "sha256": "07b908010053e37e434382783a1d6e7fedc54f09560b903fdd4b9b5fc0447370",
+      "bytes": 47232
+    },
+    {
+      "path": "tools/heartchy-dev",
+      "sha256": "197b9a2690d1f7cf55f1f678b3fbc40bede303cf7b5834dacedfb83eaae938d7",
+      "bytes": 32100
+    },
+    {
+      "path": "tools/heartchy-feature.py",
+      "sha256": "55614c9c709c2b64242ec477638d3099750ccdad19a074714895a97bd1af2227",
+      "bytes": 5670
+    },
+    {
+      "path": "tools/heartchy-lua-plan.py",
+      "sha256": "c49f314e208d26dfe27ce7c0488b9168ea15df9276d39e30d3f43bc9a25b8f17",
+      "bytes": 18800
+    },
+    {
+      "path": "tools/heartchy-plan.py",
+      "sha256": "312efadd1e71f209aaca5f44f72de9c2bac416719bfb14b618a5c90d18bda897",
+      "bytes": 23657
+    },
+    {
+      "path": "tools/heartchy-release",
+      "sha256": "d04f0bbcadab06da83b77e4a6254e93f717255dbe97880919f2accf6cb3371e7",
+      "bytes": 8344
+    },
+    {
+      "path": "tools/heartchy-target.py",
+      "sha256": "77d2ef070651c3677ebcce659fa6310c0afbdac7489936f506fe91cee93f8465",
+      "bytes": 4300
+    },
+    {
+      "path": "tools/lua-contract.lua",
+      "sha256": "a984ee692f05461f8d0bcf5c2f70439de225e4f158f94a5741f0742ea3d62206",
+      "bytes": 2953
+    },
+    {
+      "path": "trust/heartchy-test.json",
+      "sha256": "21f93f14394f69a397680ec736ee2ad66d88acd7be1b338a9271fc20e0fe54af",
+      "bytes": 183
+    },
+    {
+      "path": "updates/cli.py",
+      "sha256": "dbfe0f0245556ed1e9813c4eded8a8387af9be9ec62fa90fb39118f74fa7f296",
+      "bytes": 5764
+    },
+    {
+      "path": "updates/engine.py",
+      "sha256": "2790706a1eaffbe2c9b32f739b8fd410c957dfc94f201f3a2c1da3d1a62c8a06",
+      "bytes": 15625
+    },
+    {
+      "path": "updates/network.py",
+      "sha256": "be469e45e975041e49e5ed212faa8fdfaf648d48ebad793e4f846ad29387d1b5",
+      "bytes": 7475
+    },
+    {
+      "path": "updates/release.py",
+      "sha256": "6fdd76fe85e880f568ba52872193a35c45ec107a75465ace0b68e23931ab61e9",
+      "bytes": 9734
+    },
+    {
+      "path": "updates/tui.py",
+      "sha256": "ff6deadbe89f0b3fc9ef5fc4f62ffe78b0b6ccbf9b0e966a5cf38c047b273124",
+      "bytes": 8931
+    },
+    {
+      "path": "work/FEATURE_TEMPLATE.md",
+      "sha256": "68fc755293319e1cc332ee8cbe5c2357a74a166f5ef33024854656b13a7170fb",
+      "bytes": 1732
+    },
+    {
+      "path": "work/features/arq-dev-001.md",
+      "sha256": "48fa22175051f95e2f4491a958837acacd09acd28c958c3f103a8a3bf26bd7e7",
+      "bytes": 4783
+    },
+    {
+      "path": "work/features/core-apply.md",
+      "sha256": "e09efaa88c6a7e4cc173605f8edea6672a5ee8e6fd39f0c29536f18672a589a6",
+      "bytes": 8085
+    },
+    {
+      "path": "work/features/development-foundation.md",
+      "sha256": "527b74a90cc0597dd33a101a528b111bef41f376ff3c8dbf98096e5a551e7f65",
+      "bytes": 6463
+    },
+    {
+      "path": "work/features/updates-first-test.md",
+      "sha256": "648e0735fd546493e68a91ec046c5c34015ff9656c373778b61e6113f8317025",
+      "bytes": 6615
+    },
+    {
+      "path": "work/features/updates-mockup.md",
+      "sha256": "c176b71287643eac6724b5de46773f5d2c1c5ce39ca82c44c4bcfcd636fc4541",
+      "bytes": 30519
+    }
+  ]
+}

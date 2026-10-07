@@ -1,0 +1,58 @@
+#!/usr/bin/python3 -I
+"""Single test entrypoint. Always create namespaces; never fall back to the host."""
+import sys
+
+sys.dont_write_bytecode = True
+
+import argparse
+import os
+import re
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Run Heartchy's isolated tests. Requires Bubblewrap; no live desktop tests.")
+    parser.add_argument("--only", metavar="TEST_NAME", help="Run one named test under the same isolation; unknown names fail.")
+    options = parser.parse_args()
+    if options.only and not re.fullmatch(r"test_[a-z0-9_]+", options.only):
+        parser.error("--only requires a single test_<name> identifier")
+    root = Path(__file__).resolve().parents[1]
+    bwrap = shutil.which("bwrap", path="/usr/bin:/bin")
+    if not bwrap:
+        print("NOT_RUN: Bubblewrap missing; no host fallback. PASS=0 FAIL=0 NOT_RUN=1")
+        return 2
+    with tempfile.TemporaryDirectory(prefix="heartchy-tests-", dir="/tmp") as scratch:
+        # OpenSSH needs getpwuid even for ephemeral signing. Supply a synthetic
+        # account, never the host passwd database or SSH configuration.
+        passwd = Path(scratch) / "test-passwd"
+        passwd.write_text(f"heartchy-test:x:{os.getuid()}:{os.getgid()}:Isolated test:/nonexistent:/bin/false\n")
+        args = [bwrap, "--unshare-all", "--die-with-parent", "--new-session",
+                "--tmpfs", "/", "--ro-bind", "/usr", "/usr", "--ro-bind", "/lib", "/lib",
+                "--ro-bind-try", "/lib64", "/lib64", "--symlink", "usr/bin", "/bin",
+                "--symlink", "usr/bin", "/sbin", "--dir", "/home", "--dir", "/root",
+                "--dir", "/etc", "--ro-bind", str(passwd), "/etc/passwd",
+                "--dir", "/run", "--tmpfs", "/tmp", "--proc", "/proc", "--dev", "/dev",
+                "--ro-bind", str(root), "/work", "--bind", scratch, "/sandbox",
+                "--remount-ro", "/",
+                "--clearenv", "--setenv", "PATH", "/usr/bin:/bin",
+                "--setenv", "LC_ALL", "C.UTF-8", "--setenv", "TMPDIR", "/sandbox",
+                "--setenv", "HEARTCHY_TEST_ISOLATED", "1", "--chdir", "/work"]
+        # Only recursion suppression is forwarded; it cannot disable isolation.
+        if os.environ.get("HEARTCHY_PORTABLE_CHILD") == "1":
+            args += ["--setenv", "HEARTCHY_PORTABLE_CHILD", "1"]
+        args += ["--", "/usr/bin/python3", "-I", "-B", "/work/test/suite.py"]
+        if options.only:
+            args += ["--only", options.only]
+        print(f"Isolated tests; explicit temporary workspace: {scratch}", flush=True)
+        result = subprocess.run(args, env={"PATH": "/usr/bin:/bin", "LC_ALL": "C.UTF-8"}, check=False)
+        if not (Path(scratch) / "suite-started").exists():
+            print("NOT_RUN: sandbox did not start; no tests ran and no host fallback was used. PASS=0 FAIL=0 NOT_RUN=1")
+            return 2
+        return result.returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

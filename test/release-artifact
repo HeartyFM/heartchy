@@ -1,0 +1,79 @@
+#!/usr/bin/python3 -I
+"""Verify and exercise one downloaded release inside disposable namespaces."""
+import argparse
+import json
+import os
+from pathlib import Path
+import runpy
+import subprocess
+import sys
+import tempfile
+
+sys.dont_write_bytecode = True
+ROOT = Path(__file__).resolve().parents[1]
+
+def worker():
+    if os.environ.get('HEARTCHY_ARTIFACT_ISOLATED') != '1' or ROOT != Path('/work'):
+        raise SystemExit('Refusing non-isolated artifact test')
+    case = runpy.run_path('/work/test/suite.py')['CoreTests']('runTest')
+    case.setUp()
+    try:
+        case.a = Path('/delivery')
+        case.trust = Path('/trust.json')
+        case.update_target()
+        runtime = case.area / 'verified-runtime'
+        # The checked-out verifier authenticates bytes before downloaded code runs.
+        result = case.update_cli('extract', '--delivery', case.a, '--trust', case.trust, '--output', runtime)
+        case.expect_ok(result)
+        case.repo = runtime
+        plan, summary, _ = case.up_plan(case.a, '--prefer-heartchy', 'shell_intent:bar.transparent')
+        case.assertFalse(summary['blocked'])
+        case.expect_ok(case.up_apply(case.a, plan))
+        case.expect_ok(case.up_effect('validate'))
+        applied = runpy.run_path('/work/test/update_tests.py')['contents'](case.config)
+        plan, _, _ = case.up_plan(case.a)
+        result = case.up_apply(case.a, plan)
+        case.expect_ok(result)
+        case.assertEqual(json.loads(result.stdout)['apply']['result'], 'NO_CHANGE')
+        case.assertEqual(runpy.run_path('/work/test/update_tests.py')['contents'](case.config), applied)
+        case.expect_ok(case.up_effect('rollback'))
+        case.assertFalse((case.config / 'hypr/heartchy.lua').exists())
+        case.assertFalse((case.config / 'omarchy/shell.toml').exists())
+        metadata = json.loads(Path('/delivery/release.json').read_text())
+        print(json.dumps({'result': 'PASS', 'level': 'ARTIFACT_ISOLATED',
+                          'version': metadata['version'], 'commit': metadata['source_commit'],
+                          'archive_sha256': metadata['archive']['sha256'],
+                          'steps': ['verify', 'extract', 'stock first write', 'validate', 'no-op', 'rollback'],
+                          'graphical': 'NOT_RUN', 'Diego': 'NOT_RUN', 'Rafa': 'NOT_RUN'}, indent=2))
+    finally:
+        case.tearDown()
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--delivery', required=True)
+    p.add_argument('--trust', required=True)
+    a = p.parse_args()
+    delivery = Path(a.delivery).absolute()
+    trust = Path(a.trust).absolute()
+    if delivery.is_symlink() or trust.is_symlink() or not delivery.is_dir() or not trust.is_file():
+        p.error('Require existing regular delivery and trust paths')
+    with tempfile.TemporaryDirectory(prefix='heartchy-artifact-', dir='/tmp') as temp:
+        passwd = Path(temp) / 'passwd'
+        passwd.write_text(f'heartchy-test:x:{os.getuid()}:{os.getgid()}:Isolated test:/nonexistent:/bin/false\n')
+        args = ['/usr/bin/bwrap', '--unshare-all', '--die-with-parent', '--new-session',
+                '--tmpfs', '/', '--ro-bind', '/usr', '/usr', '--ro-bind', '/lib', '/lib',
+                '--ro-bind-try', '/lib64', '/lib64', '--symlink', 'usr/bin', '/bin',
+                '--dir', '/etc', '--ro-bind', str(passwd), '/etc/passwd', '--dir', '/run',
+                '--dir', '/home', '--dir', '/root', '--proc', '/proc', '--dev', '/dev', '--tmpfs', '/tmp',
+                '--ro-bind', str(ROOT), '/work', '--ro-bind', str(delivery), '/delivery',
+                '--ro-bind', str(trust), '/trust.json', '--bind', temp, '/sandbox', '--remount-ro', '/',
+                '--clearenv', '--setenv', 'PATH', '/usr/bin:/bin', '--setenv', 'LC_ALL', 'C.UTF-8',
+                '--setenv', 'TMPDIR', '/sandbox', '--setenv', 'HEARTCHY_ARTIFACT_ISOLATED', '1',
+                '--chdir', '/work', '--', '/usr/bin/python3', '-I', '-B', '/work/test/release-artifact', '--worker']
+        return subprocess.run(args, env={'PATH': '/usr/bin:/bin'}, check=False).returncode
+
+if __name__ == '__main__':
+    if sys.argv[1:] == ['--worker']:
+        worker()
+    else:
+        raise SystemExit(main())

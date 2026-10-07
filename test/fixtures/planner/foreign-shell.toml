@@ -1,0 +1,28 @@
+# Synthetic foreign settings, including the real blocked spelling.
+[omafiles]
+glass = true # belongs to the recipient
+dark-opacity = 0.30
+label = "A string with # and escaped \"quotes\""
+[personal]
+count = 4
+ratio = 1e-3
+undefined-ratio = nan
+infinite-ratio = +inf
+enabled = false
+names = ["one", "two"]
+items = [
+  { name = "[menu]", active = true },
+  { name = "background-alpha = 0.1", active = false },
+]
+note = """
+[menu]
+background-alpha = 0.1
+"""
+literal = '''
+[not-core]
+text = 'opaque foreign string'
+'''
+[personal.nested]
+flag = true
+["foreign.table"]
+text = 'unchanged'

@@ -1,0 +1,71 @@
+[hyprland]
+active-border = "#b8b8b8"
+active-border-foreground = "#b8b8b8"
+[controls]
+normal-fill-alpha = 0.035
+normal-border = "#e0e0e0"
+normal-border-alpha = 0.14
+normal-border-width = 1
+hover-cursor-fill-alpha = 0.09
+hover-cursor-border = "#e0e0e0"
+hover-cursor-border-alpha = 0.2
+hover-cursor-border-width = 1
+focus-fill-alpha = 0.1
+focus-border = "#e0e0e0"
+focus-border-alpha = 0.32
+focus-border-width = 1
+selected-fill-alpha = 0.12
+selected-border = "#e0e0e0"
+selected-border-alpha = 0.2
+selected-border-width = 1
+pressed-fill-alpha = 0.18
+selection-fill-alpha = 0.22
+[menu]
+background-alpha = 0.75
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+scrim-alpha = 0.06
+selected-background = "accent"
+selected-background-alpha = 0.12
+selected-border = "accent"
+selected-border-alpha = 0.65
+selected-border-width = 1
+[popups]
+background-alpha = 0.70
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+
+[notifications]
+background-alpha = 0.70
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+[tooltip]
+background-alpha = 0.70
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+[polkit]
+background-alpha = 0.75
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+scrim-alpha = 0.06
+border-error = "#aaaaaa"
+[lock]
+background-alpha = 0.75
+border = "#b8b8b8 #666666 135deg"
+border-alpha = 0.6
+border-width = 1
+border-active = "#b8b8b8"
+border-error = "#aaaaaa"
+selection = "#e0e0e0"
+selection-alpha = 0.16
+[image-picker]
+scrim-alpha = 0.20
+selected-border = "#e0e0e0"
+selected-border-alpha = 0.7
+unselected-border = "#b0b0b0"
+unselected-border-alpha = 0.24

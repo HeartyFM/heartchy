@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "bar": {
+    "transparent": false,
+    "layout": {
+      "right": [
+        "SYNTHETIC_UNMANAGED_LAYOUT"
+      ]
+    }
+  },
+  "personal-note": "SYNTHETIC_UNMANAGED_VALUE"
+}

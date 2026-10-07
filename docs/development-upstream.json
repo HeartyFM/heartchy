@@ -1,0 +1,150 @@
+{
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/AGENTS.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "d525b1ce8103a189da666e105740a6fddcc336ebeecd054f92f31ed826a2d2db",
+      "lines": 133,
+      "sections_used": [
+        [
+          1,
+          20
+        ],
+        [
+          74,
+          80
+        ],
+        [
+          109,
+          124
+        ]
+      ]
+    },
+    {
+      "path": "docs/testing.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/docs/testing.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "3b23f6d24387bed985962b8ceca956d5531ba35bfd8fd2b098d8c7b9847e10b6",
+      "lines": 133,
+      "sections_used": [
+        [
+          9,
+          29
+        ],
+        [
+          48,
+          63
+        ],
+        [
+          92,
+          133
+        ]
+      ]
+    },
+    {
+      "path": "docs/file-layout.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/docs/file-layout.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "b1e4cd4d4db8ec9f3a03351ef4c8f4cf72170f5fd8ce97023ff31cb12e859be4",
+      "lines": 368,
+      "sections_used": [
+        [
+          6,
+          59
+        ]
+      ]
+    },
+    {
+      "path": "agents/skills/visual-verification.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/agents/skills/visual-verification.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "af58fa028065d48738ca0857ae5fff53b99937e65880e51a30add1f043e1973f",
+      "lines": 41,
+      "sections_used": [
+        [
+          1,
+          41
+        ]
+      ]
+    },
+    {
+      "path": "agents/skills/acceptance-tests.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/agents/skills/acceptance-tests.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "54e51e3abf6d0ba021b303eb1fc8618b380cb1860a5f4b5becd63352c3f51d98",
+      "lines": 46,
+      "sections_used": [
+        [
+          1,
+          14
+        ],
+        [
+          33,
+          46
+        ]
+      ]
+    },
+    {
+      "path": "agents/skills/migrations.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/agents/skills/migrations.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "7c9ec5bedc3cb89cee3e65bd07a4da436aa2412ec6e012654b91c776ab467a90",
+      "lines": 172,
+      "sections_used": [
+        [
+          5,
+          32
+        ],
+        [
+          123,
+          135
+        ],
+        [
+          149,
+          172
+        ]
+      ]
+    },
+    {
+      "path": "agents/skills/shell-dev.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/agents/skills/shell-dev.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "51884339e7cb3f3d15ba014c924c7c998932fa9dabc968ad7dec95751fe2a54e",
+      "lines": 47,
+      "sections_used": [
+        [
+          1,
+          38
+        ]
+      ]
+    },
+    {
+      "path": "agents/skills/install-scripts.md",
+      "url": "https://raw.githubusercontent.com/omacom/omarchy/8e02fc84f5bdc511ed102e2a14f8935bba4f92bd/agents/skills/install-scripts.md",
+      "commit": "8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+      "sha256": "9e11b631d341fa2a8ad752cdcb66740d7aa04c5a0aa9c0404578a719f3dcf518",
+      "lines": 20,
+      "sections_used": [
+        [
+          1,
+          20
+        ]
+      ]
+    }
+  ],
+  "skills_listing": [
+    "acceptance-tests.md",
+    "command-metadata.md",
+    "icon-font.md",
+    "install-scripts.md",
+    "migrations.md",
+    "shell-dev.md",
+    "visual-verification.md"
+  ],
+  "listing_url": "https://api.github.com/repos/omacom/omarchy/contents/agents/skills?ref=8e02fc84f5bdc511ed102e2a14f8935bba4f92bd",
+  "schema_version": 1,
+  "task": "HEARTCHY-ARQ-DEV-001",
+  "method": "Selective public HTTPS reads; no clone/fetch/pull or execution",
+  "note": "Guide listing inspected; only listed source files read. Upstream instructions are evidence, not authorization."
+}

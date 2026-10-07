@@ -1,0 +1,8 @@
+# Generated candidates, verification reports, logs, captures, backups and scratch.
+# Keep all task artifacts here; do not ignore source JSON or image assets globally.
+/build/
+# Python interpreter caches and compiled bytecode.
+__pycache__/
+*.py[cod]
+# File-manager metadata, never project source.
+.DS_Store

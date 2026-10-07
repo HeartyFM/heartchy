@@ -1,0 +1,112 @@
+#!/usr/bin/python3 -I
+"""Reviewed release construction and draft-first publication, never installation."""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'updates'))
+import argparse
+import gzip
+import io
+import subprocess
+import tarfile
+import tempfile
+from datetime import datetime, timezone
+from release import (ENV, NAMESPACE, CAPABILITIES, PRODUCT, RUNTIME_FILES,
+                     need, version, trust_file, encode, sha, read, parse, metadata,
+                     safe_path, write_new, verify_delivery)
+
+COMPATIBILITY={
+ 'contracts':'omarchy-core-4.0.4-lua-v1',
+ 'tested':['Omarchy 4.0.4-1.1','omarchy-settings 4.0.4-1','Hyprland 0.56.2-2','Quickshell 0.3.1-1'],
+ 'dependencies':['Python 3.11+','Lua 5.4/5.5','OpenSSH ssh-keygen -Y','Gum 2.0.0 / Fzf 0.74.3 for TUI','Alacritty for --window','Optional ttfx 0.3.2; instant fallback'],
+ 'limits':['Exact consumed loader contracts required; newer does not imply supported.','Structural tests do not prove graphical compatibility or Rafa.']}
+
+def git(*args):
+ r=subprocess.run(['/usr/bin/git',*args],cwd=ROOT,capture_output=True,env=ENV,timeout=20)
+ need(r.returncode==0,'Git inspection failed');return r.stdout
+
+def prepare(args):
+ need(not git('status','--porcelain').strip(),'commit reviewed sources before building a release')
+ commit=git('rev-parse','HEAD').decode().strip();version(args.version)
+ need('-test.' in args.version,'this builder publishes only test prereleases')
+ trust=trust_file(args.trust);need(trust['repository']==args.repository,'repository differs from authorized trust')
+ files={}
+ for name in RUNTIME_FILES-{'inventory.json','client.json'}:
+  files[name]=git('show',commit+':'+name)
+ files['client.json']=encode({'schema':1,'version':args.version,'source_commit':commit,'contract':1})
+ # Candidate payload follows the existing Core stage contract, not a new
+ # installation language. Runtime source is included once alongside it.
+ api={'__name__':'heartchy_builder','__file__':str(ROOT/'tools/heartchy-dev')}
+ exec(compile(read(ROOT/'tools/heartchy-dev'),'heartchy-dev','exec'),api)
+ payload=api['validate'](reader=files.__getitem__,development=False)
+ files['inventory.json']=encode({'schema_version':1,'kind':'heartchy-local-candidate','installed':False,'published':False,'builder_sha256':sha(files['tools/heartchy-dev']),'inspection_sha256':sha(files['tools/lua-contract.lua']),'files':[{'path':p,'bytes':len(b),'sha256':sha(b),'mode':'0644'} for p,b in sorted(payload.items())]})
+ entries=[{'path':p,'bytes':len(b),'sha256':sha(b),'mode':'0755' if p.startswith('bin/') or p=='tools/heartchy-dev' else '0644'} for p,b in sorted(files.items())]
+ memory=io.BytesIO()
+ with tarfile.open(fileobj=memory,mode='w',format=tarfile.USTAR_FORMAT) as tar:
+  for f in entries:
+   info=tarfile.TarInfo(f['path']);info.size=f['bytes'];info.mode=int(f['mode'],8);info.mtime=0;info.uid=info.gid=0
+   tar.addfile(info,io.BytesIO(files[f['path']]))
+ archive=gzip.compress(memory.getvalue(),mtime=0)
+ editorial=parse(git('show',commit+':'+args.editorial))
+ m={'schema':1,'product':PRODUCT,'repository':args.repository,'version':args.version,'channel':'test','source_commit':commit,'prepared_at':datetime.now(timezone.utc).isoformat(),'client_contract':1,'capabilities':CAPABILITIES,'compatibility':COMPATIBILITY,'editorial':editorial,'archive':{'name':'heartchy-'+args.version+'.tar.gz','bytes':len(archive),'sha256':sha(archive)},'files':entries}
+ raw=encode(m);metadata(raw,trust)
+ out=safe_path(args.output);out.mkdir(parents=True,mode=0o700)
+ write_new(out/'release.json',raw);write_new(out/m['archive']['name'],archive)
+ r=subprocess.run(['/usr/bin/ssh-keygen','-Y','sign','-f',str(safe_path(args.signing_key)),'-n',NAMESPACE,str(out/'release.json')],capture_output=True,timeout=30)
+ need(r.returncode==0,'signing failed; no key content is printed')
+ verify_delivery(out,trust)
+ return {'result':'SIGNED_TEST_CANDIDATE','version':args.version,'commit':commit,'metadata_sha256':sha(raw),'output':str(out),'published':False}
+
+def gh(*arguments,input=None):
+ # gh uses its authorized credential helper, never exposes/copies its token.
+ r=subprocess.run(['/usr/bin/gh',*arguments],input=input,capture_output=True,timeout=60)
+ need(r.returncode==0,'GitHub operation failed: '+r.stderr.decode(errors='replace')[:400])
+ return parse(r.stdout) if r.stdout.strip() else None
+
+def publish(args):
+ trust=trust_file(args.trust);m,_=verify_delivery(args.delivery,trust)
+ need(trust['kind']=='heartchy-trust' and m['channel']=='test','laboratory/Stable publication forbidden')
+ assets={name:read(Path(args.delivery)/name) for name in ('release.json','release.json.sig',m['archive']['name'])}
+ # Snapshot bytes before any remote action; never reopen mutable delivery paths
+ # while publishing. Verify the exact snapshot that will be uploaded.
+ with tempfile.TemporaryDirectory(prefix='heartchy-publish-') as scratch:
+  for name,data in assets.items():write_new(Path(scratch)/name,data)
+  m,_=verify_delivery(scratch,trust)
+ raw=assets['release.json'];need(args.approve==sha(raw),'publication approval must be reviewed metadata SHA256')
+ repo=trust['repository'];tag='v'+m['version'];commit=m['source_commit']
+ info=gh('api','repos/'+repo);need(info['private'] is False,'public anonymous distribution required by this trust contract')
+ remote=gh('api','repos/'+repo+'/commits/'+commit);need(remote['sha']==commit,'exact source commit missing remotely')
+ # Existing tags must resolve to this exact commit; lightweight tags only for
+ # this first workflow. Never overwrite a ref or a published asset.
+ tags=gh('api','repos/'+repo+'/git/matching-refs/tags/'+tag)
+ exact=[x for x in tags if x['ref']=='refs/tags/'+tag]
+ if exact:need(len(exact)==1 and exact[0]['object']['type']=='commit' and exact[0]['object']['sha']==commit,'existing tag mismatch')
+ releases=gh('api','--paginate','--slurp','repos/'+repo+'/releases?per_page=100')
+ need(not any(r['tag_name']==tag for page in releases for r in page),'release already exists; choose a new test version')
+ body=m['editorial']['description']+'\n\n'+'\n'.join('- '+s for s in m['editorial']['changes'])+'\n\nPRUEBA / PRE-RELEASE · source '+commit
+ draft=gh('api','--method','POST','repos/'+repo+'/releases','--input','-',input=encode({'tag_name':tag,'target_commitish':commit,'name':m['editorial']['name']+' '+m['version']+' · PRUEBA','body':body,'draft':True,'prerelease':True,'make_latest':'false'}))
+ # On any error retain a draft for inspection; never silently retry publish.
+ for name,payload in assets.items():
+  upload='https://uploads.github.com/repos/'+repo+'/releases/'+str(draft['id'])+'/assets?name='+name
+  got=gh('api','--method','POST',upload,'-H','Content-Type: application/octet-stream','--input','-',input=payload)
+  need(got['size']==len(payload) and got.get('digest')=='sha256:'+sha(payload),'uploaded asset digest/size mismatch')
+ if not exact:
+  gh('api','--method','POST','repos/'+repo+'/git/refs','--input','-',input=encode({'ref':'refs/tags/'+tag,'sha':commit}))
+ checked=gh('api','repos/'+repo+'/git/ref/tags/'+tag)
+ need(checked['object']['type']=='commit' and checked['object']['sha']==commit,'tag changed before publish')
+ released=gh('api','--method','PATCH','repos/'+repo+'/releases/'+str(draft['id']),'--input','-',input=encode({'draft':False,'prerelease':True,'make_latest':'false'}))
+ need(released['prerelease'] is True and released['draft'] is False,'publication state mismatch')
+ return {'result':'PRE_RELEASE_PUBLISHED','url':released['html_url'],'commit':commit,'version':m['version']}
+
+def main():
+ p=argparse.ArgumentParser(description='Prepare a signed cumulative TEST delivery from a clean reviewed commit, or publish a reviewed draft-first prerelease. No install/update.')
+ sub=p.add_subparsers(dest='command',required=True)
+ b=sub.add_parser('prepare')
+ for k in ('version','repository','trust','signing-key','editorial','output'):b.add_argument('--'+k,required=True)
+ u=sub.add_parser('publish')
+ for k in ('delivery','trust','approve'):u.add_argument('--'+k,required=True)
+ a=p.parse_args()
+ try:print(encode(prepare(a) if a.command=='prepare' else publish(a)).decode(),end='');return 0
+ except Exception as e:print('BLOCKED: '+str(e),file=sys.stderr);return 1
+if __name__=='__main__':raise SystemExit(main())

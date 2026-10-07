@@ -1,0 +1,8 @@
+#!/usr/bin/python3 -I
+"""Portable reviewed runtime; no dependency on a development checkout."""
+import sys
+from pathlib import Path
+sys.dont_write_bytecode=True
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'updates'))
+from cli import main
+raise SystemExit(main())
