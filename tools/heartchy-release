@@ -89,7 +89,7 @@ def publish(args):
  # On any error retain a draft for inspection; never silently retry publish.
  for name,payload in assets.items():
   upload='https://uploads.github.com/repos/'+repo+'/releases/'+str(draft['id'])+'/assets?name='+name
-  got=gh('api','--method','POST',upload,'-H','Content-Type: application/octet-stream','--input','-',input=payload)
+  got=gh('api','--method','POST',upload,'-H','Content-Type: application/octet-stream','-H','Content-Length: '+str(len(payload)),'--input','-',input=payload)
   need(got['size']==len(payload) and got.get('digest')=='sha256:'+sha(payload),'uploaded asset digest/size mismatch')
  if not exact:
   gh('api','--method','POST','repos/'+repo+'/git/refs','--input','-',input=encode({'ref':'refs/tags/'+tag,'sha':commit}))

@@ -1,7 +1,7 @@
 {
   "kind": "reviewed-public-source-snapshot",
-  "development_commit": "b804cd7fa66055d1d7175a602193d4ff46c6a5cb",
-  "history": "New publication snapshot created now; does not pretend to contain private development history. No reset/rebase/merge of the development branch.",
+  "development_commit": "580540800302f27718bc7e8fc378e578e4057482",
+  "history": "Current publication snapshot; private development history not exported.",
   "transformations": [
     {
       "path": "docs/core-application.md",
@@ -454,8 +454,8 @@
     },
     {
       "path": "test/update_tests.py",
-      "sha256": "d8b8629f3848bda2c57a81d5bab505f1be7c16a731cf88a9af013da048d46bd4",
-      "bytes": 34055
+      "sha256": "55756c448670fdaff6eafb9125fd38c6d0acfae985152438c3655affa4fb66fc",
+      "bytes": 34104
     },
     {
       "path": "tools/heartchy-apply.py",
@@ -484,8 +484,8 @@
     },
     {
       "path": "tools/heartchy-release",
-      "sha256": "d04f0bbcadab06da83b77e4a6254e93f717255dbe97880919f2accf6cb3371e7",
-      "bytes": 8344
+      "sha256": "00fac4c94c7ea6523dd13494a8d715b6c56506b22e8105266b98d392341dac1f",
+      "bytes": 8386
     },
     {
       "path": "tools/heartchy-target.py",
@@ -549,8 +549,8 @@
     },
     {
       "path": "work/features/updates-first-test.md",
-      "sha256": "648e0735fd546493e68a91ec046c5c34015ff9656c373778b61e6113f8317025",
-      "bytes": 6615
+      "sha256": "c9a0b42b79ade7b8f9999b01f010bb1b3470db5309c73af33960b7490d82003a",
+      "bytes": 7381
     },
     {
       "path": "work/features/updates-mockup.md",

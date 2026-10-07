@@ -364,6 +364,7 @@ def gh(*a,input=None):
  if '/git/ref/tags/' in url:return {'object':{'type':'commit','sha':m['source_commit']}}
  if url.startswith('https://uploads.'):
   assert a[a.index('--input')+1]=='-'
+  assert 'Content-Length: '+str(len(input)) in a
   if url.endswith(m['archive']['name']):assert sha(input)==m['archive']['sha256']
   return {'size':len(input),'digest':'sha256:'+sha(input)}
  if '--method' in a and a[a.index('--method')+1]=='PATCH':
