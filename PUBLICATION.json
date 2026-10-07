@@ -1,6 +1,6 @@
 {
   "kind": "reviewed-public-source-snapshot",
-  "development_commit": "580540800302f27718bc7e8fc378e578e4057482",
+  "development_commit": "4c675c10d25a3466973d52cbfc758feb531de869",
   "history": "Current publication snapshot; private development history not exported.",
   "transformations": [
     {
@@ -159,8 +159,8 @@
     },
     {
       "path": "docs/updater.md",
-      "sha256": "65216e33ddf60e42b44612a18a05c5ba6f2c3b44f0e450bc03be3f1f694c9715",
-      "bytes": 13603
+      "sha256": "0e764b97f3ab47f3790160577335f3a0b9735e3276a0a3ea21eb4089c503286a",
+      "bytes": 14137
     },
     {
       "path": "docs/updates-mockup.md",
@@ -184,8 +184,8 @@
     },
     {
       "path": "mockups/animation_preview.py",
-      "sha256": "a998c2d18e0245e05f2ebf62a121d5085526ead6cb84b62532afe74e17054588",
-      "bytes": 12179
+      "sha256": "f1f9b1635ad475ff9f8d5c70157f06f1b35f3de8981dc40405c7c0dbbab57039",
+      "bytes": 12358
     },
     {
       "path": "mockups/assets/heartchy.txt",
@@ -214,8 +214,8 @@
     },
     {
       "path": "releases/first-test.json",
-      "sha256": "2330782ef8662ef200484d7731c03debf4c9f3d5632d9ee38f810fd931f7b6a5",
-      "bytes": 1114
+      "sha256": "429dc9a9889933db9b2917f03585be66086f19581a505662af62944dd050d9fa",
+      "bytes": 1264
     },
     {
       "path": "test/all",
@@ -449,8 +449,8 @@
     },
     {
       "path": "test/suite.py",
-      "sha256": "b7aca115934d04abd7cbe055a34a2b9b5180d485df5b98909322bdc68c0c7a2f",
-      "bytes": 177200
+      "sha256": "5ce1cc42d4078fbf553be5463875f19c0f7d248a985780a445cb97847246b735",
+      "bytes": 178563
     },
     {
       "path": "test/update_tests.py",
@@ -549,8 +549,8 @@
     },
     {
       "path": "work/features/updates-first-test.md",
-      "sha256": "c9a0b42b79ade7b8f9999b01f010bb1b3470db5309c73af33960b7490d82003a",
-      "bytes": 7381
+      "sha256": "eff7825ff50e51c4b81da9df65629c4ba7b1101f771373c4ac6037c97e4065ee",
+      "bytes": 8172
     },
     {
       "path": "work/features/updates-mockup.md",

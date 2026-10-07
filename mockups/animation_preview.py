@@ -241,8 +241,11 @@ def compare(ui, logo, keys, heading, banner, indexed, color_escape):
                         interrupted = True; break
             elapsed = time.monotonic() - started
             shown = target
-            resized = shutil.get_terminal_size() != size
-            size = shutil.get_terminal_size()
+            # Compare and remember the same observation. A resize between two
+            # reads otherwise consumes the new size without repainting the logo.
+            final_size = shutil.get_terminal_size()
+            resized = final_size != size
+            size = final_size
             if full and not resized:
                 paint(static_rows(logo(target)), target)
             status = ("Interrumpida; logo final restaurado" if interrupted else "Última muestra") + f" · {elapsed * 1000:.0f} ms"

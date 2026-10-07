@@ -41,7 +41,7 @@ Rutas en ejemplos son explícitas y deben existir; destinos de salida nuevos. No
 ```sh
 ./bin/heartchy-update --help
 ./bin/heartchy-update catalog --trust trust/heartchy-test.json --channel test
-./bin/heartchy-update fetch --trust trust/heartchy-test.json --channel test --version 0.1.0-test.1 --output /tmp/heartchy-delivery-review
+./bin/heartchy-update fetch --trust trust/heartchy-test.json --channel test --version 0.1.0-test.2 --output /tmp/heartchy-delivery-review
 ./bin/heartchy-update verify --trust trust/heartchy-test.json --delivery /tmp/heartchy-delivery-review
 ./bin/heartchy-update extract --trust trust/heartchy-test.json --delivery /tmp/heartchy-delivery-review --output /tmp/heartchy-runtime-review
 ./test/release-artifact --delivery /tmp/heartchy-delivery-review --trust trust/heartchy-test.json
@@ -65,11 +65,13 @@ El último comando verifica y ejecuta ese runtime dentro de Bubblewrap, sin red/
 ```sh
 ./tools/heartchy-dev check
 ./test/all
-./tools/heartchy-release prepare --version 0.1.0-test.1 --repository HeartyFM/heartchy --trust trust/heartchy-test.json --signing-key /ruta/clave-autorizada --editorial releases/first-test.json --output build/prerelease-0.1.0-test.1
-./tools/heartchy-release publish --delivery build/prerelease-0.1.0-test.1 --trust trust/heartchy-test.json --approve SHA256_METADATA_REVISADO
+./tools/heartchy-release prepare --version 0.1.0-test.2 --repository HeartyFM/heartchy --trust trust/heartchy-test.json --signing-key /ruta/clave-autorizada --editorial releases/first-test.json --output build/prerelease-0.1.0-test.2
+./tools/heartchy-release publish --delivery build/prerelease-0.1.0-test.2 --trust trust/heartchy-test.json --approve SHA256_METADATA_REVISADO
 ```
 
 Publicar requiere resumen exacto y Release Gate ya autorizado; no ocurre al commit/merge. Source commit exacto debe existir remoto. Snapshot verificado antes de red, draft → tres assets por bytes fijados → hash/tamaño remoto → tag exacto (nuevo lightweight si ausente) → prerelease=true, make_latest=false. Ante fallo queda draft para inspección; no se reemplazan assets ni tags existentes. Inmutabilidad existente se respeta, sin cambios de administración. Descargar anónimamente la prerelease pública y ejecutar `test/release-artifact` sobre **esa descarga**, después revisión de Diego. Promover a oficial exige nuevo contrato/autorización coherente, no renombrar títulos.
+
+La publicación inicial usó una copia pública revisada sin exportar el historial privado de desarrollo. `PUBLICATION.json` en esa rama vincula commit local, inventario/hashes y las dos sustituciones documentales de rutas personales. Runtime/Core no se transforman. Los commits de publicación son identidades reales distintas de los commits de desarrollo; no se atribuye a la release el SHA del checkout privado. Cambios posteriores se revisan sobre esa rama pública, sin subir automáticamente otro historial ni evidencia local.
 
 ## Nuevo LOCAL TEST GATE — NOT_RUN
 

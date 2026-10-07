@@ -2803,6 +2803,28 @@ class CoreTests(UpdatesMixin, unittest.TestCase):
         self.assertNotIn('\x1b[2;2H', out.getvalue())
         self.assertIn('cabecera compacta', out.getvalue())
 
+    def test_animation_resize_after_instant_frame_repaints_header(self):
+        import contextlib, io
+        module, model = self.updates_model()
+        preview = runpy.run_path(str(self.repo / 'mockups/animation_preview.py'))
+        ui = module['NativeUI'](model, {}, animation=False)
+        observations = iter([os.terminal_size((130, 39))] * 5)
+        narrow = os.terminal_size((60, 23))
+        events = iter([([0], [], []), ([], [], []), ([0], [], [])])
+        inputs = iter([b'\x1b[C', b'\x1b'])
+        out = io.StringIO()
+        with patch.object(termios, 'tcgetattr', return_value=[0,0,0,0,0,0,[]]), \
+             patch.object(termios, 'tcsetattr'), \
+             patch.object(shutil, 'get_terminal_size', side_effect=lambda: next(observations, narrow)), \
+             patch.object(select, 'select', side_effect=lambda *a: next(events)), \
+             patch.object(os, 'read', side_effect=lambda *a: next(inputs)), \
+             contextlib.redirect_stdout(out):
+            def keys(pending, data, expired=False, extra=None):
+                return module['selector_keys'](pending, data, True, extra)
+            preview['compare'](ui, module['logo'], keys, module['heading'], module['banner'],
+                               module['indexed'], module['color_escape'])
+        self.assertIn('HEARTCHY · cabecera compacta', out.getvalue())
+
     def test_animation_preview_cli_and_normal_default_unchanged(self):
         module, _ = self.updates_model()
         regular = module['window_command']()
